@@ -1,0 +1,182 @@
+---
+title: "Section Lookup Tool"
+format: html
+server: shiny
+---
+
+```{r setup, include=FALSE}
+library(sf)
+library(tidyverse)
+library(shiny)
+library(httr)
+library(jsonlite)
+```
+
+## Address Section Lookup
+
+Type an address below to find out which section it falls in.
+
+```{r}
+#| panel: sidebar
+
+# ── File path ──────────────────────────────────────────────────────────────────
+# Update this path to point to your GeoJSON file
+GEOJSON_PATH <- "Maine_Voting_Districts_2021_US_Congress.geojson"
+
+# ── Section column ─────────────────────────────────────────────────────────────
+# Update this to the attribute name in your GeoJSON that identifies the section
+# e.g. "section", "SECTION", "name", "district", etc.
+SECTION_COLUMN <- "section"
+
+textInput(
+  "address",
+  label    = "Enter an address:",
+  value    = "",
+  placeholder = "e.g. 1600 Pennsylvania Ave NW, Washington DC"
+)
+
+actionButton("lookup", "Look Up Section", class = "btn-primary")
+```
+
+```{r}
+#| panel: main
+
+uiOutput("result_box")
+leaflet::leafletOutput("map", height = "420px")
+```
+
+```{r}
+#| context: server
+
+# Load GeoJSON once on startup
+sections <- reactive({
+  req(file.exists(GEOJSON_PATH))
+  st_read(GEOJSON_PATH, quiet = TRUE) |>
+    st_transform(4326)   # ensure WGS84
+})
+
+# Geocode using the free Nominatim API (OpenStreetMap)
+geocode_address <- function(address) {
+  url <- modify_url(
+    "https://nominatim.openstreetmap.org/search",
+    query = list(
+      q      = address,
+      format = "json",
+      limit  = 1
+    )
+  )
+  resp <- GET(url, user_agent("SectionLookupApp/1.0"))
+  if (http_error(resp)) return(NULL)
+  result <- fromJSON(content(resp, "text", encoding = "UTF-8"))
+  if (length(result) == 0) return(NULL)
+  list(lat = as.numeric(result$lat[1]),
+       lon = as.numeric(result$lon[1]),
+       display_name = result$display_name[1])
+}
+
+lookup_result <- eventReactive(input$lookup, {
+  req(nchar(trimws(input$address)) > 0)
+
+  withProgress(message = "Geocoding address…", value = 0.4, {
+    geo <- geocode_address(trimws(input$address))
+  })
+
+  if (is.null(geo)) {
+    return(list(status = "not_found", address = input$address))
+  }
+
+  point <- st_sfc(st_point(c(geo$lon, geo$lat)), crs = 4326)
+
+  secs <- sections()
+  idx  <- st_within(point, secs, sparse = FALSE)
+  hit  <- which(apply(idx, 1, any))
+
+  if (length(hit) == 0) {
+    return(list(status  = "outside",
+                address  = geo$display_name,
+                lat      = geo$lat,
+                lon      = geo$lon))
+  }
+
+  section_val <- secs[[SECTION_COLUMN]][hit[1]]
+
+  list(
+    status      = "found",
+    address     = geo$display_name,
+    section     = section_val,
+    lat         = geo$lat,
+    lon         = geo$lon,
+    sections_sf = secs
+  )
+})
+
+output$result_box <- renderUI({
+  res <- lookup_result()
+
+  box <- function(color, icon, heading, body) {
+    tags$div(
+      style = paste0(
+        "border-left: 6px solid ", color, ";",
+        "background:", color, "18;",
+        "padding:16px 20px; border-radius:6px; margin-bottom:16px;"
+      ),
+      tags$h4(style = paste0("color:", color, "; margin-top:0;"),
+              tags$span(icon), " ", heading),
+      tags$p(style = "margin:0; font-size:1rem;", body)
+    )
+  }
+
+  switch(res$status,
+    not_found = box("#c0392b", "✗", "Address not found",
+                    paste0('"', res$address, '" could not be geocoded.',
+                           " Please check the spelling and try again.")),
+
+    outside   = box("#e67e22", "⚠", "Outside all sections",
+                    paste0(res$address,
+                           " was located but does not fall within any section",
+                           " in the GeoJSON file.")),
+
+    found     = box("#27ae60", "✓", paste0("Section: ", res$section),
+                    paste0(res$address, " is in section ", res$section, "."))
+  )
+})
+
+output$map <- leaflet::renderLeaflet({
+  res <- lookup_result()
+  req(res$status != "not_found")
+
+  secs <- if (!is.null(res$sections_sf)) res$sections_sf else sections()
+
+  pal <- leaflet::colorFactor(
+    palette = c("#3498db", "#e74c3c", "#2ecc71", "#f39c12",
+                "#9b59b6", "#1abc9c", "#e67e22", "#34495e"),
+    domain  = secs[[SECTION_COLUMN]]
+  )
+
+  leaflet::leaflet() |>
+    leaflet::addProviderTiles(leaflet::providers$CartoDB.Positron) |>
+    leaflet::addPolygons(
+      data        = secs,
+      fillColor   = ~pal(get(SECTION_COLUMN)),
+      fillOpacity = 0.35,
+      color       = "#2c3e50",
+      weight      = 2,
+      label       = ~as.character(get(SECTION_COLUMN)),
+      highlightOptions = leaflet::highlightOptions(
+        weight = 4, fillOpacity = 0.6, bringToFront = TRUE
+      )
+    ) |>
+    leaflet::addLegend(
+      position = "bottomright",
+      pal      = pal,
+      values   = secs[[SECTION_COLUMN]],
+      title    = "Section"
+    ) |>
+    leaflet::addMarkers(
+      lng   = res$lon,
+      lat   = res$lat,
+      popup = paste0("<b>", htmltools::htmlEscape(res$address), "</b>")
+    ) |>
+    leaflet::setView(lng = res$lon, lat = res$lat, zoom = 13)
+})
+```

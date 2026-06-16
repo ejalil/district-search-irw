@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Section Lookup Tool</title>
+<title>Maine District Lookup</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -45,7 +45,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Section Lookup Tool</h1>
+<h1 class="title">Maine District Lookup</h1>
 </div>
 
 
@@ -62,18 +62,15 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="address-section-lookup" class="level2">
-<h2 class="anchored" data-anchor-id="address-section-lookup">Address Section Lookup</h2>
-<p>Type an address below to find out which section it falls in.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="form-group shiny-input-container">
-<label class="control-label" id="address-label" for="address">Enter an address:</label>
-<input id="address" type="text" class="shiny-input-text form-control" value="" placeholder="e.g. 1600 Pennsylvania Ave NW, Washington DC" data-update-on="change">
+<label class="control-label" id="address-label" for="address">Enter a Maine address:</label>
+<input id="address" type="text" class="shiny-input-text form-control" value="" placeholder="e.g. 123 Main St, Portland, ME" data-update-on="change">
 </div>
 </div>
 <div class="cell-output-display">
-<button class="btn btn-default action-button btn-primary" id="lookup" type="button"><span class="action-label">Look Up Section</span></button>
+<button class="btn btn-default action-button btn-primary" id="lookup" type="button"><span class="action-label">Look Up Districts</span></button>
 </div>
 </div>
 <div class="cell">
@@ -81,155 +78,154 @@ ul.task-list li input[type="checkbox"] {
 <div id="result_box" class="shiny-html-output"></div>
 </div>
 <div class="cell-output-display">
-<div class="leaflet html-widget html-widget-output shiny-report-size html-fill-item" id="map" style="width:100%;height:420px;"></div>
+<div class="leaflet html-widget html-widget-output shiny-report-size html-fill-item" id="map" style="width:100%;height:450px;"></div>
 </div>
 </div>
 <p>
-<script type="application/shiny-prerendered" data-context="server-start">
+<script type="application/shiny-prerendered" data-context="server">
 library(sf)
-library(tidyverse)
-library(shiny)
-library(leaflet)
 library(httr)
 library(jsonlite)
+library(htmltools)
+library(leaflet)
 
-GEOJSON_PATH <- "~/Documents/GitHub/irw-work/docs/Maine_Voting_Districts_2021_US_Congress.geojson"
-SECTION_COLUMN <- "DISTRICT"
-print(GEOJSON_PATH)
-print(file.exists(GEOJSON_PATH))
-</script>
- 
-<script type="application/shiny-prerendered" data-context="server">
-# Load GeoJSON once on startup
-sections <- reactive({
-  req(file.exists(GEOJSON_PATH))
-  st_read(GEOJSON_PATH, quiet = TRUE) |>
-    st_transform(4326)   # ensure WGS84
+CONGRESSIONAL_PATH   <- "~/Documents/GitHub/irw-work/docs/Maine_Voting_Districts_2021_US_Congress.geojson"
+STATE_HOUSE_PATH     <- "~/Documents/GitHub/irw-work/docs/Maine_Voting_Districts_2021_House.geojson"
+CONGRESSIONAL_COLUMN <- "DISTRICT"
+STATE_HOUSE_COLUMN   <- "DISTRICT"
+
+congressional <- reactive({
+  st_read(path.expand(CONGRESSIONAL_PATH), quiet = TRUE) |> st_transform(4326)
 })
 
-# Geocode using the free Nominatim API (OpenStreetMap)
+state_house <- reactive({
+  st_read(path.expand(STATE_HOUSE_PATH), quiet = TRUE) |> st_transform(4326)
+})
+
 geocode_address <- function(address) {
-  url <- modify_url(
+  if (!grepl("maine|,\\s*me\\b", address, ignore.case = TRUE)) {
+    address <- paste0(address, ", Maine")
+  }
+  url <- httr::modify_url(
     "https://nominatim.openstreetmap.org/search",
-    query = list(
-      q      = address,
-      format = "json",
-      limit  = 1
-    )
+    query = list(q = address, format = "json", limit = 1, countrycodes = "us")
   )
-  resp <- GET(url, user_agent("SectionLookupApp/1.0"))
-  if (http_error(resp)) return(NULL)
-  result <- fromJSON(content(resp, "text", encoding = "UTF-8"))
-  if (length(result) == 0) return(NULL)
-  list(lat = as.numeric(result$lat[1]),
-       lon = as.numeric(result$lon[1]),
-       display_name = result$display_name[1])
+  resp <- tryCatch(
+    httr::GET(url, httr::user_agent("MaineDistrictLookup/1.0"), httr::timeout(10)),
+    error = function(e) NULL
+  )
+  if (is.null(resp) || httr::http_error(resp)) return(NULL)
+  result <- jsonlite::fromJSON(httr::content(resp, "text", encoding = "UTF-8"))
+  if (length(result) == 0 || nrow(result) == 0) return(NULL)
+  list(
+    lat          = as.numeric(result$lat[1]),
+    lon          = as.numeric(result$lon[1]),
+    display_name = result$display_name[1]
+  )
+}
+
+find_district <- function(point, layer, col) {
+  idx <- sf::st_within(point, layer, sparse = FALSE)
+  hit <- which(apply(idx, 1, any))
+  if (length(hit) == 0) return(NA_character_)
+  as.character(layer[[col]][hit[1]])
 }
 
 lookup_result <- eventReactive(input$lookup, {
   req(nchar(trimws(input$address)) > 0)
+  geo <- geocode_address(trimws(input$address))
+  if (is.null(geo)) return(list(status = "not_found", address = input$address))
 
-  withProgress(message = "Geocoding address…", value = 0.4, {
-    geo <- geocode_address(trimws(input$address))
-  })
-
-  if (is.null(geo)) {
-    return(list(status = "not_found", address = input$address))
-  }
-
-  point <- st_sfc(st_point(c(geo$lon, geo$lat)), crs = 4326)
-
-  secs <- sections()
-  idx  <- st_within(point, secs, sparse = FALSE)
-  hit  <- which(apply(idx, 1, any))
-
-  if (length(hit) == 0) {
-    return(list(status  = "outside",
-                address  = geo$display_name,
-                lat      = geo$lat,
-                lon      = geo$lon))
-  }
-
-  section_val <- secs[[SECTION_COLUMN]][hit[1]]
+  point         <- sf::st_sfc(sf::st_point(c(geo$lon, geo$lat)), crs = 4326)
+  cong_district  <- find_district(point, congressional(), CONGRESSIONAL_COLUMN)
+  house_district <- find_district(point, state_house(),   STATE_HOUSE_COLUMN)
 
   list(
-    status      = "found",
-    address     = geo$display_name,
-    section     = section_val,
-    lat         = geo$lat,
-    lon         = geo$lon,
-    sections_sf = secs
+    status        = "found",
+    address       = geo$display_name,
+    lat           = geo$lat,
+    lon           = geo$lon,
+    congressional = cong_district,
+    state_house   = house_district,
+    cong_sf       = congressional(),
+    house_sf      = state_house()
   )
 })
 
 output$result_box <- renderUI({
   res <- lookup_result()
 
-  box <- function(color, icon, heading, body) {
+  badge <- function(label, value) {
+    color <- if (is.na(value)) "#95a5a6" else "#27ae60"
+    text  <- if (is.na(value)) "Not found in this layer" else paste("District", value)
     tags$div(
-      style = paste0(
-        "border-left: 6px solid ", color, ";",
-        "background:", color, "18;",
-        "padding:16px 20px; border-radius:6px; margin-bottom:16px;"
-      ),
-      tags$h4(style = paste0("color:", color, "; margin-top:0;"),
-              tags$span(icon), " ", heading),
-      tags$p(style = "margin:0; font-size:1rem;", body)
+      style = paste0("border-left:6px solid ", color, ";background:", color,
+                     "18;padding:12px 18px;border-radius:6px;margin-bottom:10px;"),
+      tags$strong(style = paste0("color:", color, ";"), label),
+      tags$span(style = "margin-left:10px;font-size:1rem;", text)
     )
   }
 
-  switch(res$status,
-    not_found = box("#c0392b", "✗", "Address not found",
-                    paste0('"', res$address, '" could not be geocoded.',
-                           " Please check the spelling and try again.")),
+  if (res$status == "not_found") {
+    return(tags$div(
+      style = "border-left:6px solid #c0392b;background:#c0392b18;padding:16px 20px;border-radius:6px;",
+      tags$h4(style = "color:#c0392b;margin-top:0;", "Address not found"),
+      tags$p(style = "margin:0;",
+             paste0('"', res$address, '" could not be geocoded. Try adding the city or zip code.'))
+    ))
+  }
 
-    outside   = box("#e67e22", "⚠", "Outside all sections",
-                    paste0(res$address,
-                           " was located but does not fall within any section",
-                           " in the GeoJSON file.")),
-
-    found     = box("#27ae60", "✓", paste0("Section: ", res$section),
-                    paste0(res$address, " is in section ", res$section, "."))
+  tagList(
+    tags$div(
+      style = "background:#f8f9fa;padding:10px 16px;border-radius:6px;margin-bottom:12px;font-size:0.9rem;color:#555;",
+      tags$b("Address: "), res$address
+    ),
+    badge("U.S. Congressional District", res$congressional),
+    badge("Maine State House District",  res$state_house)
   )
 })
 
-output$map <- leaflet::renderLeaflet({
+output$map <- renderLeaflet({
   res <- lookup_result()
-  req(res$status != "not_found")
+  req(res$status == "found")
 
-  secs <- if (!is.null(res$sections_sf)) res$sections_sf else sections()
+  cong_sf  <- res$cong_sf
+  house_sf <- res$house_sf
 
-  pal <- leaflet::colorFactor(
-    palette = c("#3498db", "#e74c3c", "#2ecc71", "#f39c12",
-                "#9b59b6", "#1abc9c", "#e67e22", "#34495e"),
-    domain  = secs[[SECTION_COLUMN]]
-  )
+  pal_cong  <- colorFactor(palette = "Blues",   domain = cong_sf[[CONGRESSIONAL_COLUMN]])
+  pal_house <- colorFactor(palette = "Oranges", domain = house_sf[[STATE_HOUSE_COLUMN]])
 
-  leaflet::leaflet() |>
-    leaflet::addProviderTiles(leaflet::providers$CartoDB.Positron) |>
-    leaflet::addPolygons(
-      data        = secs,
-      fillColor   = ~pal(get(SECTION_COLUMN)),
-      fillOpacity = 0.35,
-      color       = "#2c3e50",
-      weight      = 2,
-      label       = ~as.character(get(SECTION_COLUMN)),
-      highlightOptions = leaflet::highlightOptions(
-        weight = 4, fillOpacity = 0.6, bringToFront = TRUE
+  leaflet() |>
+    addProviderTiles(providers$CartoDB.Positron) |>
+    addPolygons(
+      data             = cong_sf,
+      group            = "Congressional Districts",
+      fillColor        = ~pal_cong(get(CONGRESSIONAL_COLUMN)),
+      fillOpacity      = 0.35, color = "#2471a3", weight = 2,
+      label            = ~paste("Congressional District", get(CONGRESSIONAL_COLUMN)),
+      highlightOptions = highlightOptions(weight = 4, fillOpacity = 0.6, bringToFront = TRUE)
+    ) |>
+    addPolygons(
+      data             = house_sf,
+      group            = "State House Districts",
+      fillColor        = ~pal_house(get(STATE_HOUSE_COLUMN)),
+      fillOpacity      = 0.35, color = "#a04000", weight = 2,
+      label            = ~paste("State House District", get(STATE_HOUSE_COLUMN)),
+      highlightOptions = highlightOptions(weight = 4, fillOpacity = 0.6, bringToFront = TRUE)
+    ) |>
+    addMarkers(
+      lng   = res$lon, lat = res$lat,
+      popup = paste0(
+        "<b>", htmlEscape(res$address), "<\u002fb>",
+        "<br>Congressional: ", ifelse(is.na(res$congressional), "N/A", res$congressional),
+        "<br>State House: ",   ifelse(is.na(res$state_house),   "N/A", res$state_house)
       )
     ) |>
-    leaflet::addLegend(
-      position = "bottomright",
-      pal      = pal,
-      values   = secs[[SECTION_COLUMN]],
-      title    = "Section"
+    addLayersControl(
+      overlayGroups = c("Congressional Districts", "State House Districts"),
+      options       = layersControlOptions(collapsed = FALSE)
     ) |>
-    leaflet::addMarkers(
-      lng   = res$lon,
-      lat   = res$lat,
-      popup = paste0("<b>", htmltools::htmlEscape(res$address), "<\u002fb>")
-    ) |>
-    leaflet::setView(lng = res$lon, lat = res$lat, zoom = 13)
+    setView(lng = res$lon, lat = res$lat, zoom = 10)
 })
 </script>
  
@@ -267,10 +263,9 @@ ojs_define <- function(..., .session = shiny::getDefaultReactiveDomain()) {
 <!--/html_preserve-->
 <!--html_preserve-->
 <script type="application/shiny-prerendered" data-context="execution_dependencies">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73]}},"value":[{"type":"character","attributes":{},"value":["base","class","classInt","cli","colorspace","compiler","crosstalk","datasets","DBI","digest","dplyr","e1071","evaluate","fansi","fastmap","forcats","generics","ggplot2","glue","graphics","grDevices","grid","gtable","hms","htmltools","htmlwidgets","httpuv","httr","jquerylib","jsonlite","KernSmooth","knitr","later","leaflet","lifecycle","lubridate","magrittr","methods","mime","munsell","otel","pillar","pkgconfig","promises","proxy","purrr","R6","Rcpp","readr","rlang","rmarkdown","rstudioapi","scales","sf","shiny","stats","stringi","stringr","tibble","tidyr","tidyselect","tidyverse","timechange","tools","tzdb","units","utf8","utils","vctrs","withr","xfun","xtable","yaml"]},{"type":"character","attributes":{},"value":["4.4.1","7.3-22","0.4-10","3.6.5","2.1-1","4.4.1","1.2.1","4.4.1","1.3.0","0.6.37","1.1.4","1.7-16","1.0.5","1.0.6","1.2.0","1.0.0","0.1.3","3.5.1","1.8.0","4.4.1","4.4.1","4.4.1","0.3.5","1.1.3","0.5.8.1","1.6.4","1.6.15","1.4.7","0.1.4","2.0.0","2.23-24","1.51","1.4.1","2.2.2","1.0.5","1.9.3","2.0.3","4.4.1","0.12","0.5.1","0.2.0","1.9.0","2.0.3","1.5.0","0.4-27","1.0.2","2.6.1","1.0.13","2.1.5","1.1.7","2.28","0.16.0","1.3.0","1.0-19","1.13.0","4.4.1","1.8.4","1.5.1","3.2.1","1.3.1","1.2.1","2.0.0","0.3.0","4.4.1","0.4.0","0.8-5","1.2.4","4.4.1","0.6.5","3.0.2","0.57","1.8-8","2.3.10"]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36]}},"value":[{"type":"character","attributes":{},"value":["base","cli","compiler","crosstalk","datasets","digest","evaluate","fastmap","graphics","grDevices","htmltools","htmlwidgets","httpuv","jquerylib","jsonlite","knitr","later","leaflet","lifecycle","magrittr","methods","mime","otel","promises","R6","Rcpp","rlang","rmarkdown","rstudioapi","shiny","stats","tools","utils","xfun","xtable","yaml"]},{"type":"character","attributes":{},"value":["4.4.1","3.6.5","4.4.1","1.2.1","4.4.1","0.6.37","1.0.5","1.2.0","4.4.1","4.4.1","0.5.8.1","1.6.4","1.6.15","0.1.4","2.0.0","1.51","1.4.1","2.2.2","1.0.5","2.0.3","4.4.1","0.12","0.2.0","1.5.0","2.6.1","1.0.13","1.1.7","2.28","0.16.0","1.13.0","4.4.1","4.4.1","4.4.1","0.57","1.8-8","2.3.10"]}]}]}
 </script>
 <!--/html_preserve-->
-</section>
 
 </main>
 <!-- /main column -->

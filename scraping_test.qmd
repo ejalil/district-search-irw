@@ -1,0 +1,11 @@
+---
+title: "scraping maine website"
+format: html
+editor: visual
+---
+
+I am going to be trying out Aidan's scraping lesson in here for the Maine Legislative Bill Tracking website.
+
+```{r}
+
+```

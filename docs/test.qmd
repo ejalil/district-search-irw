@@ -33,11 +33,14 @@ library(httr)
 library(jsonlite)
 library(htmltools)
 library(leaflet)
+library(shiny)
 
-CONGRESSIONAL_PATH   <- "~/Documents/GitHub/irw-work/docs/Maine_Voting_Districts_2021_US_Congress.geojson"
-STATE_HOUSE_PATH     <- "~/Documents/GitHub/irw-work/docs/Maine_Voting_Districts_2021_House.geojson"
+CONGRESSIONAL_PATH   <- "~/Documents/GitHub/district-search-irw/docs/Maine_Voting_Districts_2021_US_Congress.geojson"
+STATE_HOUSE_PATH     <- "~/Documents/GitHub/district-search-irw/docs/Maine_Voting_Districts_2021_House.geojson"
+STATE_SENATE_PATH    <- "~/Documents/GitHub/district-search-irw/docs/Maine_Voting_Districts_2021_State_Senate.geojson"
 CONGRESSIONAL_COLUMN <- "DISTRICT"
 STATE_HOUSE_COLUMN   <- "DISTRICT"
+STATE_SENATE_COLUMN  <- "DISTRICT"
 
 congressional <- reactive({
   st_read(path.expand(CONGRESSIONAL_PATH), quiet = TRUE) |> st_transform(4326)
@@ -45,6 +48,10 @@ congressional <- reactive({
 
 state_house <- reactive({
   st_read(path.expand(STATE_HOUSE_PATH), quiet = TRUE) |> st_transform(4326)
+})
+
+state_senate <- reactive({
+  st_read(path.expand(STATE_SENATE_PATH), quiet = TRUE) |> st_transform(4326)
 })
 
 geocode_address <- function(address) {
@@ -73,7 +80,9 @@ find_district <- function(point, layer, col) {
   idx <- sf::st_within(point, layer, sparse = FALSE)
   hit <- which(idx[1, ])
   if (length(hit) == 0) return(NA_character_)
-  as.character(layer[[col]][hit[1]])
+  val <- layer[[col]][hit[1]]
+  if (length(val) == 0 || is.null(val)) return(NA_character_)
+  as.character(val)
 }
 
 lookup_result <- eventReactive(input$lookup, {
@@ -81,9 +90,10 @@ lookup_result <- eventReactive(input$lookup, {
   geo <- geocode_address(trimws(input$address))
   if (is.null(geo)) return(list(status = "not_found", address = input$address))
 
-  point         <- sf::st_sfc(sf::st_point(c(geo$lon, geo$lat)), crs = 4326)
-  cong_district  <- find_district(point, congressional(), CONGRESSIONAL_COLUMN)
-  house_district <- find_district(point, state_house(),   STATE_HOUSE_COLUMN)
+  point           <- sf::st_sfc(sf::st_point(c(geo$lon, geo$lat)), crs = 4326)
+  cong_district   <- find_district(point, congressional(), CONGRESSIONAL_COLUMN)
+  house_district  <- find_district(point, state_house(),   STATE_HOUSE_COLUMN)
+  senate_district <- find_district(point, state_senate(),  STATE_SENATE_COLUMN)
 
   list(
     status        = "found",
@@ -92,8 +102,10 @@ lookup_result <- eventReactive(input$lookup, {
     lon           = geo$lon,
     congressional = cong_district,
     state_house   = house_district,
+    state_senate  = senate_district,
     cong_sf       = congressional(),
-    house_sf      = state_house()
+    house_sf      = state_house(),
+    sen_sf        = state_senate()
   )
 })
 
@@ -126,7 +138,8 @@ output$result_box <- renderUI({
       tags$b("Address: "), res$address
     ),
     badge("U.S. Congressional District", res$congressional),
-    badge("Maine State House District",  res$state_house)
+    badge("Maine State House District",  res$state_house),
+    badge("Maine State Senate District", res$state_senate)
   )
 })
 
@@ -136,9 +149,11 @@ output$map <- renderLeaflet({
 
   cong_sf  <- res$cong_sf
   house_sf <- res$house_sf
+  sen_sf   <- res$sen_sf
 
-  pal_cong  <- colorFactor(palette = "Blues",   domain = cong_sf[[CONGRESSIONAL_COLUMN]])
-  pal_house <- colorFactor(palette = "Oranges", domain = house_sf[[STATE_HOUSE_COLUMN]])
+  pal_cong   <- colorFactor(palette = "Blues",   domain = cong_sf[[CONGRESSIONAL_COLUMN]])
+  pal_house  <- colorFactor(palette = "Oranges", domain = house_sf[[STATE_HOUSE_COLUMN]])
+  pal_senate <- colorFactor(palette = "Purples", domain = sen_sf[[STATE_SENATE_COLUMN]])
 
   leaflet() |>
     addProviderTiles(providers$CartoDB.Positron) |>
@@ -158,19 +173,27 @@ output$map <- renderLeaflet({
       label            = ~paste("State House District", get(STATE_HOUSE_COLUMN)),
       highlightOptions = highlightOptions(weight = 4, fillOpacity = 0.6, bringToFront = TRUE)
     ) |>
+    addPolygons(
+      data             = sen_sf,
+      group            = "State Senate Districts",
+      fillColor        = ~pal_senate(get(STATE_SENATE_COLUMN)),
+      fillOpacity      = 0.35, color = "#6c3483", weight = 2,
+      label            = ~paste("State Senate District", get(STATE_SENATE_COLUMN)),
+      highlightOptions = highlightOptions(weight = 4, fillOpacity = 0.6, bringToFront = TRUE)
+    ) |>
     addMarkers(
       lng   = res$lon, lat = res$lat,
       popup = paste0(
         "<b>", htmlEscape(res$address), "</b>",
         "<br>Congressional: ", ifelse(is.na(res$congressional), "N/A", res$congressional),
-        "<br>State House: ",   ifelse(is.na(res$state_house),   "N/A", res$state_house)
+        "<br>State House: ",   ifelse(is.na(res$state_house),   "N/A", res$state_house),
+        "<br>State Senate: ",  ifelse(is.na(res$state_senate),  "N/A", res$state_senate)
       )
     ) |>
     addLayersControl(
-      overlayGroups = c("Congressional Districts", "State House Districts"),
+      overlayGroups = c("Congressional Districts", "State House Districts", "State Senate Districts"),
       options       = layersControlOptions(collapsed = FALSE)
     ) |>
     setView(lng = res$lon, lat = res$lat, zoom = 10)
 })
 ```
-

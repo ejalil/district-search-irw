@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Maine District Lookup</title>
+
+<!-- Leaflet (map) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Turf (point-in-polygon, in the browser instead of R's sf) -->
+<script src="https://unpkg.com/@turf/turf@7/turf.min.js"></script>
+
+<style>
+  /* Approximates the Quarto default (Bootstrap) article look the Shiny page renders with. */
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #212529;
+    line-height: 1.5;
+    margin: 0;
+    background: #fff;
+  }
+  .content { max-width: 900px; margin: 0 auto; padding: 28px 24px 40px; }
+  h1 { font-size: 2.1rem; font-weight: 600; margin: 0 0 1.2rem; letter-spacing: -.01em; }
+
+  label { display: block; font-weight: 400; margin: 0 0 .35rem; }
+  input[type=text] {
+    width: 100%; max-width: 520px; display: block;
+    padding: .375rem .75rem; font-size: 1rem; line-height: 1.5;
+    color: #212529; background: #fff; border: 1px solid #ced4da; border-radius: .375rem;
+  }
+  input[type=text]:focus {
+    outline: 0; border-color: #86b7fe; box-shadow: 0 0 0 .25rem rgba(13,110,253,.25);
+  }
+  .btn-primary {
+    margin-top: 1rem; display: inline-block;
+    padding: .375rem .75rem; font-size: 1rem; font-weight: 400; line-height: 1.5;
+    color: #fff; background: #0d6efd; border: 1px solid #0d6efd; border-radius: .375rem;
+    cursor: pointer;
+  }
+  .btn-primary:hover { background: #0b5ed7; border-color: #0a58ca; }
+  .btn-primary:disabled { background: #6ea8fe; border-color: #6ea8fe; cursor: default; }
+
+  #result_box { margin: 1.4rem 0 1rem; }
+  .addr-bar {
+    background: #f8f9fa; padding: 10px 16px; border-radius: 6px;
+    margin-bottom: 12px; font-size: .9rem; color: #555;
+  }
+  .badge-row {
+    border-left: 6px solid; padding: 12px 18px; border-radius: 6px; margin-bottom: 10px;
+  }
+  .badge-row strong { font-weight: 700; }
+  .badge-row .txt { margin-left: 10px; font-size: 1rem; }
+  .errbox {
+    border-left: 6px solid #c0392b; background: #c0392b18;
+    padding: 16px 20px; border-radius: 6px;
+  }
+  .errbox h4 { color: #c0392b; margin: 0 0 .4rem; }
+  .errbox p { margin: 0; }
+
+  #map { height: 450px; border-radius: 4px; }
+  .leaflet-container { font: inherit; }
+</style>
+</head>
+<body>
+<div class="content">
+
+  <h1>Maine District Lookup</h1>
+
+  <label for="address">Enter a Maine address:</label>
+  <input type="text" id="address" placeholder="e.g. 123 Main St, Portland, ME" />
+  <button id="lookup" class="btn-primary">Look Up Districts</button>
+
+  <div id="result_box"></div>
+  <div id="map"></div>
+
+</div>
+
+<script>
+// ── Config: the three boundary layers ───────────────────────────────────────
+// An address falls inside exactly one district in each layer.
+const DISTRICT_FIELD = "DISTRICT";
+const LAYERS = [
+  { key:"congressional", file:"Maine_Voting_Districts_2021_US_Congress.geojson",
+    group:"Congressional Districts", badge:"U.S. Congressional District",
+    labelPrefix:"Congressional District", border:"#2471a3", ramp:["#deebf7","#08519c"] },
+  { key:"state_house", file:"Maine_Voting_Districts_2021_House.geojson",
+    group:"State House Districts", badge:"Maine State House District",
+    labelPrefix:"State House District", border:"#a04000", ramp:["#fee6ce","#a63603"] },
+  { key:"state_senate", file:"Maine_Voting_Districts_2021_State_Senate.geojson",
+    group:"State Senate Districts", badge:"Maine State Senate District",
+    labelPrefix:"State Senate District", border:"#6c3483", ramp:["#efedf5","#54278f"] },
+];
+
+// ── Map setup (CartoDB Positron, same as the Shiny app) ─────────────────────
+const map = L.map("map").setView([45.25, -69.0], 6);  // Maine
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+  attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19
+}).addTo(map);
+
+let marker = null;
+let layersControl = null;
+const drawn = {};          // key -> Leaflet layer currently on the map
+const geojsonCache = {};   // file -> parsed GeoJSON (lazy-loaded once)
+
+async function loadGeojson(file) {
+  if (geojsonCache[file]) return geojsonCache[file];
+  const resp = await fetch(file);
+  if (!resp.ok) throw new Error("Could not load " + file);
+  geojsonCache[file] = await resp.json();
+  return geojsonCache[file];
+}
+
+// Approximate R's colorFactor() sequential ColorBrewer ramps by interpolating
+// each district value across the layer's two-endpoint ramp.
+function hexToRgb(h){ return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]; }
+function lerpColor(a, b, t){
+  const A=hexToRgb(a), B=hexToRgb(b);
+  const c=A.map((v,i)=>Math.round(v+(B[i]-v)*t));
+  return "#"+c.map(v=>v.toString(16).padStart(2,"0")).join("");
+}
+function rampColor(cfg, value, domain){
+  const i = domain.indexOf(String(value));
+  const t = domain.length > 1 ? i/(domain.length-1) : 0.5;
+  return lerpColor(cfg.ramp[0], cfg.ramp[1], t);
+}
+
+function esc(s){ return String(s).replace(/[&<>"]/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
+
+function drawLayer(cfg, gj){
+  if (drawn[cfg.key]) map.removeLayer(drawn[cfg.key]);
+  const domain = gj.features.map(f => String(f.properties[DISTRICT_FIELD]));
+  drawn[cfg.key] = L.geoJSON(gj, {
+    style: f => ({
+      fillColor: rampColor(cfg, f.properties[DISTRICT_FIELD], domain),
+      fillOpacity: 0.35, color: cfg.border, weight: 2
+    }),
+    onEachFeature: (f, lyr) => {
+      lyr.bindTooltip(cfg.labelPrefix + " " + f.properties[DISTRICT_FIELD], { sticky:true });
+      lyr.on("mouseover", () => lyr.setStyle({ weight:4, fillOpacity:0.6 }));
+      lyr.on("mouseout",  () => lyr.setStyle({ weight:2, fillOpacity:0.35 }));
+    }
+  }).addTo(map);
+}
+
+function rebuildLayersControl(){
+  if (layersControl) map.removeControl(layersControl);
+  const overlays = {};
+  for (const cfg of LAYERS) if (drawn[cfg.key]) overlays[cfg.group] = drawn[cfg.key];
+  layersControl = L.control.layers(null, overlays, { collapsed:false }).addTo(map);
+}
+
+// ── Geocode (same Nominatim call the Shiny app used) ────────────────────────
+async function geocode(address){
+  if (!/maine|,\s*me\b/i.test(address)) address = address + ", Maine";
+  const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q="
+            + encodeURIComponent(address);
+  const resp = await fetch(url, { headers:{ "Accept":"application/json" } });
+  if (!resp.ok) return null;
+  const data = await resp.json();
+  if (!data.length) return null;
+  return { lat:+data[0].lat, lon:+data[0].lon, display_name:data[0].display_name };
+}
+
+function districtAt(gj, lon, lat){
+  const pt = turf.point([lon, lat]);
+  for (const f of gj.features) {
+    if (turf.booleanPointInPolygon(pt, f)) return String(f.properties[DISTRICT_FIELD]);
+  }
+  return null;
+}
+
+// ── Result box (Address bar + three badges) ─────────────────────────────────
+function renderNotFound(address){
+  document.getElementById("result_box").innerHTML =
+    `<div class="errbox">
+       <h4>Address not found</h4>
+       <p>"${esc(address)}" could not be geocoded. Try adding the city or zip code.</p>
+     </div>`;
+}
+function badge(cfg, value){
+  const found = value !== null;
+  const color = found ? "#27ae60" : "#95a5a6";
+  const text  = found ? ("District " + esc(value)) : "Not found in this layer";
+  return `<div class="badge-row" style="border-color:${color}; background:${color}18;">
+            <strong style="color:${color};">${esc(cfg.badge)}</strong>
+            <span class="txt">${text}</span>
+          </div>`;
+}
+function renderResult(displayName, values){
+  const badges = LAYERS.map(cfg => badge(cfg, values[cfg.key])).join("");
+  document.getElementById("result_box").innerHTML =
+    `<div class="addr-bar"><b>Address: </b>${esc(displayName)}</div>${badges}`;
+}
+
+// ── Lookup ──────────────────────────────────────────────────────────────────
+async function runLookup(){
+  const btn = document.getElementById("lookup");
+  const address = document.getElementById("address").value.trim();
+  if (!address) return;
+
+  btn.disabled = true; btn.textContent = "Looking up…";
+  try {
+    const geo = await geocode(address);
+    if (!geo) { renderNotFound(address); return; }
+
+    const values = {};
+    for (const cfg of LAYERS) {
+      const gj = await loadGeojson(cfg.file);
+      values[cfg.key] = districtAt(gj, geo.lon, geo.lat);
+      drawLayer(cfg, gj);
+    }
+    rebuildLayersControl();
+    renderResult(geo.display_name, values);
+
+    if (marker) map.removeLayer(marker);
+    const popup =
+      "<b>" + esc(geo.display_name) + "</b>" +
+      "<br>Congressional: " + (values.congressional ?? "N/A") +
+      "<br>State House: "   + (values.state_house   ?? "N/A") +
+      "<br>State Senate: "  + (values.state_senate  ?? "N/A");
+    marker = L.marker([geo.lat, geo.lon]).addTo(map).bindPopup(popup);
+    map.setView([geo.lat, geo.lon], 10);
+    marker.openPopup();
+  } catch (err) {
+    document.getElementById("result_box").innerHTML =
+      `<div class="errbox"><h4>Something went wrong</h4><p>${esc(err.message)}</p></div>`;
+  } finally {
+    btn.disabled = false; btn.textContent = "Look Up Districts";
+  }
+}
+
+document.getElementById("lookup").addEventListener("click", runLookup);
+document.getElementById("address").addEventListener("keydown", e => {
+  if (e.key === "Enter") runLookup();
+});
+</script>
+</body>
+</html>

@@ -47,7 +47,26 @@ h1 {
   }
   .btn-primary:hover { background: #0b5ed7; border-color: #0a58ca; }
   .btn-primary:disabled { background: #6ea8fe; border-color: #6ea8fe; cursor: default; }
+.district-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 30px 0;   /* horizontal spacing between columns */
+  margin-top: 1rem;
+  text-align: center;
+}
 
+.district-table th {
+  font-weight: 600;
+  padding: 8px 20px 10px 20px;
+  border-bottom: 2px solid #ced4da;  /* line under column names */
+}
+
+.district-table td {
+  padding: 12px 20px;
+  text-align: center;      /* center values under headers */
+  vertical-align: middle;
+}
+  
   #result_box { margin: 1.4rem 0 1rem; }
   .addr-bar {
     background: #f8f9fa; padding: 10px 16px; border-radius: 6px;
@@ -179,28 +198,33 @@ function districtAt(gj, lon, lat){
 }
 
 // ── Result box (Address bar + three badges) ─────────────────────────────────
-function renderNotFound(address){
-  document.getElementById("result_box").innerHTML =
-    `<div class="errbox">
-       <h4>Address not found</h4>
-       <p>"${esc(address)}" could not be geocoded. Try adding the city or zip code.</p>
-     </div>`;
-}
-function badge(cfg, value){
-  const found = value !== null;
-  const color = found ? "#27ae60" : "#95a5a6";
-  const text  = found ? ("District " + esc(value)) : "Not found in this layer";
-  return `<div class="badge-row" style="border-color:${color}; background:${color}18;">
-            <strong style="color:${color};">${esc(cfg.badge)}</strong>
-            <span class="txt">${text}</span>
-          </div>`;
-}
-function renderResult(displayName, values){
-  const badges = LAYERS.map(cfg => badge(cfg, values[cfg.key])).join("");
-  document.getElementById("result_box").innerHTML =
-    `<div class="addr-bar"><b>Address: </b>${esc(displayName)}</div>${badges}`;
-}
 
+
+//test for how to format the values better
+function renderResult(displayName, values) {
+  document.getElementById("result_box").innerHTML = `
+    <div class="addr-bar">
+      <b>Address:</b> ${esc(displayName)}
+    </div>
+
+    <table class="district-table">
+      <thead>
+        <tr>
+          <th>Congressional District</th>
+          <th>State House District</th>
+          <th>State Senate District</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>${values.congressional ?? "Not found"}</td>
+          <td>${values.state_house ?? "Not found"}</td>
+          <td>${values.state_senate ?? "Not found"}</td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+}
 // ── Lookup ──────────────────────────────────────────────────────────────────
 async function runLookup(){
   const btn = document.getElementById("lookup");
@@ -223,10 +247,9 @@ async function runLookup(){
 
     if (marker) map.removeLayer(marker);
     const popup =
-      "<b>" + esc(geo.display_name) + "</b>" +
-      "<br>Congressional: " + (values.congressional ?? "N/A") +
-      "<br>State House: "   + (values.state_house   ?? "N/A") +
-      "<br>State Senate: "  + (values.state_senate  ?? "N/A");
+  "Congressional: " + (values.congressional ?? "N/A") +
+  "<br>State House: " + (values.state_house ?? "N/A") +
+  "<br>State Senate: " + (values.state_senate ?? "N/A");
     marker = L.marker([geo.lat, geo.lon]).addTo(map).bindPopup(popup);
     map.setView([geo.lat, geo.lon], 10);
     marker.openPopup();

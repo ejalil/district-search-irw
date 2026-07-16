@@ -225,6 +225,14 @@ function renderResult(displayName, values) {
     </table>
   `;
 }
+function renderNotFound(address){
+  document.getElementById("result_box").innerHTML = `
+    <div class="errbox">
+      <h4>Address not found</h4>
+      <p>We couldn't locate <b>${esc(address)}</b>. Check the spelling, or add a town and ZIP (e.g. "123 Main St, Portland, ME 04101").</p>
+    </div>`;
+}
+
 // ── Lookup ──────────────────────────────────────────────────────────────────
 async function runLookup(){
   const btn = document.getElementById("lookup");

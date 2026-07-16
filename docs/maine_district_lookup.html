@@ -119,6 +119,39 @@
   .rep-list li:last-child { border-bottom: 0; }
   .rep-list b { font-weight: 600; }
   .rep-party { color: #666; font-weight: 400; }
+  .rep-inline {
+    white-space: nowrap;
+    padding-right: .5rem;
+  }
+  .rep-section + .rep-section {
+    margin-top: 0;
+  }
+  .rep-sections {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .rep-sections .rep-section {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .rep-sections .rep-section.federal {
+    flex: 1.15 1 0;
+  }
+  .rep-sections .rep-section.state {
+    flex: 0.85 1 0;
+  }
+  .rep-sections .rep-section + .rep-section {
+    border-left: 1px solid #e3e6e9;
+    padding-left: 1rem;
+  }
+  .rep-section h3 {
+    margin: 0 0 .6rem;
+    font-size: .85rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: #6c757d;
+  }
 </style>
 </head>
 <body>
@@ -139,7 +172,7 @@
     <div class="rep-col">
       <h2>Your Representatives</h2>
       <div id="rep_box" class="rep-placeholder">
-        <p>Look up an address to see district info here. Representative details will be added later.</p>
+        <p>Representative information incoming...</p>
       </div>
     </div>
   </div>
@@ -301,23 +334,6 @@ function renderResult(displayName, values) {
     <div class="addr-bar">
       <b>Address:</b> ${esc(displayName)}
     </div>
-
-    <table class="district-table">
-      <thead>
-        <tr>
-          <th>Congressional District</th>
-          <th>State House District</th>
-          <th>State Senate District</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>${values.congressional ?? "Not found"}</td>
-          <td>${values.state_house ?? "Not found"}</td>
-          <td>${values.state_senate ?? "Not found"}</td>
-        </tr>
-      </tbody>
-    </table>
   `;
 }
 
@@ -341,16 +357,26 @@ function nameList(reps){
 function renderRepresentatives(values){
   const usSen = (REPS && REPS.us_senate) || [];
   document.getElementById("rep_box").innerHTML = `
-    <ul class="rep-list">
-      <li><b>U.S. House</b> — District ${values.congressional ?? "N/A"}<br>
-        ${nameList(repsFor("congressional", values.congressional))}</li>
-      <li><b>State Senate</b> — District ${values.state_senate ?? "N/A"}<br>
-        ${nameList(repsFor("state_senate", values.state_senate))}</li>
-      <li><b>State House</b> — District ${values.state_house ?? "N/A"}<br>
-        ${nameList(repsFor("state_house", values.state_house))}</li>
-      <li><b>U.S. Senate</b> — statewide<br>
-        ${usSen.length ? nameList(usSen) : "<em>not found</em>"}</li>
-    </ul>
+    <div class="rep-sections">
+      <div class="rep-section federal">
+        <h3>Federal Representatives</h3>
+        <ul class="rep-list">
+          <li><b>U.S. Senators</b><br>
+            ${usSen.length ? nameList(usSen) : "<em>not found</em>"}</li>
+          <li class="rep-inline"><b>U.S. House Representative</b> — District ${values.congressional ?? "N/A"}<br>
+            ${nameList(repsFor("congressional", values.congressional))}</li>
+        </ul>
+      </div>
+      <div class="rep-section state">
+        <h3>State Representatives</h3>
+        <ul class="rep-list">
+          <li><b>State House</b> — District ${values.state_house ?? "N/A"}<br>
+            ${nameList(repsFor("state_house", values.state_house))}</li>
+          <li><b>State Senate</b> — District ${values.state_senate ?? "N/A"}<br>
+            ${nameList(repsFor("state_senate", values.state_senate))}</li>
+        </ul>
+      </div>
+    </div>
   `;
 }
 

@@ -111,6 +111,14 @@
   }
   .rep-placeholder ul { margin: .5rem 0 0; padding-left: 1.2rem; }
   .rep-placeholder li { margin-bottom: .4rem; }
+  .rep-list { list-style: none; margin: 0; padding: 0; }
+  .rep-list li {
+    padding: 12px 0; border-bottom: 1px solid #e3e6e9;
+    color: #212529; font-size: 1.05rem; line-height: 1.4;
+  }
+  .rep-list li:last-child { border-bottom: 0; }
+  .rep-list b { font-weight: 600; }
+  .rep-party { color: #666; font-weight: 400; }
 </style>
 </head>
 <body>
@@ -177,6 +185,15 @@ async function loadGeojson(file) {
   geojsonCache[file] = await resp.json();
   return geojsonCache[file];
 }
+
+// Current officeholders, keyed by (layer, district). Loaded once at startup.
+// Shape: { congressional:{"1":[{name,party}]}, state_senate:{...}, state_house:{...},
+//          us_senate:[{name,party}] }  — us_senate is statewide (no district).
+let REPS = null;
+const repsReady = fetch("reps.json")
+  .then(r => r.ok ? r.json() : Promise.reject(new Error("reps.json " + r.status)))
+  .then(j => { REPS = j; })
+  .catch(err => { console.error("Could not load reps.json:", err); });
 
 // Build a gray "everything outside Maine" mask and zoom/fit to the state
 // on first load, so the app opens already focused on Maine.
@@ -309,14 +326,30 @@ function renderNotFound(address){
     `<div class="errbox"><h4>Address not found</h4><p>Could not geocode "${esc(address)}". Try a more complete address.</p></div>`;
 }
 
-// Stub panel — swap this in once you have actual representative data/lookup.
+// Look up the current officeholder(s) for a district and format "Name (Party)".
+// Returns an array per district (usually one; two where the source lists both).
+function repsFor(layer, district){
+  if (!REPS || district == null) return [];
+  return (REPS[layer] && REPS[layer][String(district)]) || [];
+}
+function nameList(reps){
+  if (!reps.length) return "<em>not found</em>";
+  return reps.map(r => `${esc(r.name)} <span class="rep-party">(${esc(r.party)})</span>`).join(", ");
+}
+
+// Fill the "Your Representatives" panel from the district numbers just computed.
 function renderRepresentatives(values){
+  const usSen = (REPS && REPS.us_senate) || [];
   document.getElementById("rep_box").innerHTML = `
-    <p>District info for this address:</p>
-    <ul>
-      <li>Congressional District ${values.congressional ?? "N/A"}: <em>TBD</em></li>
-      <li>State House District ${values.state_house ?? "N/A"}: <em>TBD</em></li>
-      <li>State Senate District ${values.state_senate ?? "N/A"}: <em>TBD</em></li>
+    <ul class="rep-list">
+      <li><b>U.S. House</b> — District ${values.congressional ?? "N/A"}<br>
+        ${nameList(repsFor("congressional", values.congressional))}</li>
+      <li><b>State Senate</b> — District ${values.state_senate ?? "N/A"}<br>
+        ${nameList(repsFor("state_senate", values.state_senate))}</li>
+      <li><b>State House</b> — District ${values.state_house ?? "N/A"}<br>
+        ${nameList(repsFor("state_house", values.state_house))}</li>
+      <li><b>U.S. Senate</b> — statewide<br>
+        ${usSen.length ? nameList(usSen) : "<em>not found</em>"}</li>
     </ul>
   `;
 }
@@ -341,6 +374,7 @@ async function runLookup(){
       refreshLayerStyle(cfg);
     }
     rebuildLayersControl();
+    await repsReady;                 // make sure officeholder data is in before rendering
     renderResult(geo.display_name, values);
     renderRepresentatives(values);
 

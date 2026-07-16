@@ -1,0 +1,195 @@
+layer,district,name,party,residence
+congressional,1,Chellie Pingree,D,North Haven
+congressional,2,Jared Golden,D,Lewiston
+us_senate,,Susan M. Collins,R,statewide
+us_senate,,"Angus S. King, Jr.",I,statewide
+state_senate,1,Susan Bernard,R,Aroostook
+state_senate,2,"Harold ""Trey"" L. Stewart, III",R,Aroostook
+state_senate,3,Bradlee T. Farrin,R,Somerset
+state_senate,4,Stacey K. Guerin,R,Penobscot
+state_senate,5,Russell J. Black,R,Franklin
+state_senate,6,Marianne Moore,R,Washington
+state_senate,7,Nicole C. Grohoski,D,Hancock
+state_senate,8,Michael Tipping,D,Penobscot
+state_senate,9,Joseph M. Baldacci,D,Penobscot
+state_senate,10,David G. Haggan,R,Penobscot
+state_senate,11,"Glenn ""Chip"" Curry",D,Waldo
+state_senate,12,Pinny H. Beebe-Center,D,Knox
+state_senate,13,Cameron D. Reny,D,Lincoln
+state_senate,14,Craig V. Hickman,D,Kennebec
+state_senate,15,Richard T. Bradstreet,R,Kennebec
+state_senate,16,Scott W. Cyrway,R,Kennebec
+state_senate,17,Jeffrey L. Timberlake,R,Androscoggin
+state_senate,18,Richard A. Bennett,I,Oxford
+state_senate,19,Joseph E. Martin,R,Oxford
+state_senate,20,Bruce Bickford,R,Androscoggin
+state_senate,21,"Margaret ""Peggy"" R. Rotundo",D,Androscoggin
+state_senate,22,James D. Libby,R,Cumberland
+state_senate,23,Matthea E.L. Daughtry,D,Cumberland
+state_senate,24,Denise Tepler,D,Sagadahoc
+state_senate,25,Teresa S. Pierce,D,Cumberland
+state_senate,26,Timothy E. Nangle,D,Cumberland
+state_senate,27,Jill C. Duson,D,Cumberland
+state_senate,28,Rachel Talbot Ross,D,Cumberland
+state_senate,29,Anne M. Carney,D,Cumberland
+state_senate,30,Stacy F. Brenner,D,Cumberland
+state_senate,31,Donna Bailey,D,York
+state_senate,32,Henry L. Ingwersen,D,York
+state_senate,33,Matthew A. Harrington,R,York
+state_senate,34,Joseph E. Rafferty,D,York
+state_senate,35,Mark W. Lawrence,D,York
+state_house,,Aaron Dana,T,Princeton
+state_house,,Brian Reynolds,T,Augusta
+state_house,1,Lucien Daigle,R,Fort Kent
+state_house,10,William Tuell,R,East Machias
+state_house,100,Daniel Ankeles,D,Brunswick
+state_house,101,Poppy Arford,D,Brunswick
+state_house,102,Melanie Sachs,D,Freeport
+state_house,103,Arthur Bell,D,Yarmouth
+state_house,104,Amy Arata,R,New Gloucester
+state_house,105,Anne Graham,D,North Yarmouth
+state_house,106,Barbara Bagshaw,R,Windham
+state_house,107,Mark Cooper,R,Windham
+state_house,108,Parnell Terry,D,Gorham
+state_house,109,Eleanor Sato,D,Gorham
+state_house,11,Tiffany Strout,R,Harrington
+state_house,110,Christina Mitchell,D,Cumberland
+state_house,111,Amy Kuhn,D,Falmouth
+state_house,112,W. Crockett,U,Portland
+state_house,113,Grayson Lookner,D,Portland
+state_house,114,Dylan Pugh,D,Portland
+state_house,115,Michael Brennan,D,Portland
+state_house,116,Samuel Zager,D,Portland
+state_house,117,Matt Moonen,D,Portland
+state_house,118,Yusuf Yusuf,D,Portland
+state_house,119,Charles Skold,D,Portland
+state_house,12,Billy Bob Faulkingham,R,Winter Harbor
+state_house,120,Deqa Dhalac,D,South Portland
+state_house,121,Christopher Kessler,D,South Portland
+state_house,122,Matthew Beck,D,South Portland
+state_house,123,Michelle Boyer,D,Cape Elizabeth
+state_house,124,Sophia Warren,D,Scarborough
+state_house,125,Kelly Murphy,D,Scarborough
+state_house,126,Drew Gattine,D,Westbrook
+state_house,127,Morgan Rielly,D,Westbrook
+state_house,128,Suzanne Salisbury,D,Westbrook
+state_house,129,Marshall Archer,D,Saco
+state_house,13,Russell White,R,Ellsworth
+state_house,130,Lynn Copeland,D,Saco
+state_house,131,Lori Gramlich,D,Old Orchard Beach
+state_house,132,Ryan Fecteau,D,Biddeford
+state_house,133,Marc Malon,D,Biddeford
+state_house,134,Traci Gere,D,Kennebunkport
+state_house,135,Daniel Sayre,D,Kennebunk
+state_house,136,John Eder,R,Waterboro
+state_house,137,Nathan Carlow,R,Buxton
+state_house,138,Mark Blier,R,Buxton
+state_house,139,David Woodsome,R,Waterboro
+state_house,14,Gary Friedmann,D,Bar Harbor
+state_house,140,Wayne Parry,R,Arundel
+state_house,141,Lucas Lanigan,R,Sanford
+state_house,142,Anne-Marie Mastraccio,D,Sanford
+state_house,143,Ann Fredericks,R,Sanford
+state_house,144,Jeffrey Adams,R,Lebanon
+state_house,145,Robert Foley,R,Wells
+state_house,146,Walter Runte,D,York
+state_house,147,Holly Sargent,D,York
+state_house,148,Thomas Lavigne,R,Berwick
+state_house,149,Tiffany Roberts,D,South Berwick
+state_house,15,Holly Eaton,D,Deer Isle
+state_house,150,Michele Meyer,D,Eliot
+state_house,151,Kristi Mathieson,D,Kittery
+state_house,16,Nina Milliken,D,Blue Hill
+state_house,17,Steven Bishop,R,Bucksport
+state_house,18,Mathew McIntyre,R,Lowell
+state_house,19,Richard Campbell,R,Orrington
+state_house,2,Roger Albert,R,Madawaska
+state_house,20,Dani O&#x27;Halloran,D,Brewer
+state_house,21,Ambureen Rana,D,Bangor
+state_house,22,Laura Supica,D,Bangor
+state_house,23,Amy Roeder,D,Bangor
+state_house,24,Sean Faircloth,D,Bangor
+state_house,25,Laurie Osher,D,Orono
+state_house,26,James Dill,D,Old Town
+state_house,27,Gary Drinkwater,R,Milford
+state_house,28,Irene Gifford,R,Lincoln
+state_house,29,Kathy Javner,R,Chester
+state_house,29,Nancy Theriault,R,Millinocket
+state_house,3,Mark Babin,R,Fort Fairfield
+state_house,30,James White,R,Guilford
+state_house,31,Chad Perkins,R,Dover-Foxcroft
+state_house,32,Steven Foster,R,Dexter
+state_house,33,Kenneth Fredette,R,Newport
+state_house,34,Abigail Griffin,R,Levant
+state_house,35,James Thorne,R,Carmel
+state_house,36,Kimberly Haggan,R,Hampden
+state_house,37,Reagan Paul,R,Winterport
+state_house,38,Benjamin Hymes,R,Waldo
+state_house,39,Janice Dodge,D,Belfast
+state_house,4,Timothy Guerrette,R,Caribou
+state_house,40,D. Ray,D,Lincolnville
+state_house,41,Victoria Doudera,D,Camden
+state_house,42,Valli Geiger,D,Rockland
+state_house,43,Ann Matlack,D,St. George
+state_house,44,William Pluecker,I,Warren
+state_house,45,Abden Simmons,R,Waldoboro
+state_house,46,Lydia Crafts,D,Newcastle
+state_house,47,Wayne Farrin,D,Jefferson
+state_house,48,Holly Stover,D,Boothbay
+state_house,49,Allison Hepler,D,Woolwich
+state_house,5,Joseph Underwood,R,Presque Isle
+state_house,50,David Sinclair,D,Bath
+state_house,51,Rafael Macias,D,Topsham
+state_house,52,Sally Cluchey,D,Bowdoinham
+state_house,53,Michael Lemelin,R,Chelsea
+state_house,54,Karen Montell,D,Gardiner
+state_house,55,Daniel Shagoury,D,Hallowell
+state_house,56,Randall Greenwood,R,Wales
+state_house,57,Tavis Hasenfus,D,Readfield
+state_house,58,Sharon Frost,U,Belgrade
+state_house,59,David Rollins,D,Augusta
+state_house,6,Donald Ardell,R,Monticello
+state_house,60,William Bridgeo,D,Augusta
+state_house,61,Alicia Collins,R,Sidney
+state_house,62,Katrina Smith,R,Palermo
+state_house,63,Paul Flynn,R,Albion
+state_house,64,Flavia DeBrito,D,Waterville
+state_house,65,Cassie Julia,D,Waterville
+state_house,66,Robert Nutting,R,Oakland
+state_house,67,Shelley Rudnicki,R,Fairfield
+state_house,68,Amanda Collamore,R,Pittsfield
+state_house,69,Dean Cray,R,Palmyra
+state_house,7,Gregory Swallow,R,Houlton
+state_house,70,Jennifer Poirier,R,Skowhegan
+state_house,71,John Ducharme,R,Madison
+state_house,72,Elizabeth Caruso,R,Caratunk
+state_house,73,Michael Soboleski,R,Phillips
+state_house,74,Randall Hall,R,Wilton
+state_house,75,Stephan Bunker,D,Farmington
+state_house,76,Sheila Lyman,R,Livermore Falls
+state_house,77,Tammy Schmersal-Burgess,R,Mexico
+state_house,78,Rachel Henderson,R,Rumford
+state_house,79,Michael Lance,R,Paris
+state_house,8,Tracy Quint,R,Hodgdon
+state_house,80,Caldwell Jackson,R,Oxford
+state_house,81,Peter Wood,R,Norway
+state_house,82,Nathan Wadsworth,R,Hiram
+state_house,83,Marygrace Cimino,R,Bridgton
+state_house,84,Mark Walker,R,Naples
+state_house,85,Kimberly Pomerleau,R,Standish
+state_house,86,Rolf Olsen,R,Raymond
+state_house,87,David Boyer,R,Poland
+state_house,88,Quentin Chapman,R,Auburn
+state_house,89,Adam Lee,D,Auburn
+state_house,9,Arthur Mingo,R,Calais
+state_house,90,Laurel Libby,R,Auburn
+state_house,91,Joshua Morris,R,Turner
+state_house,92,Stephen Wood,R,Greene
+state_house,93,Julia McCabe,D,Lewiston
+state_house,94,Kristen Cloutier,D,Lewiston
+state_house,94,Scott Harriman,D,Lewiston
+state_house,95,Mana Abdi,D,Lewiston
+state_house,96,Michel Lajoie,D,Lewiston
+state_house,97,Richard Mason,R,Lisbon
+state_house,98,Kilton Webb,D,Durham
+state_house,99,Cheryl Golek,D,Harpswell

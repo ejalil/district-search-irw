@@ -47,7 +47,15 @@ h1 {
   }
   .btn-primary:hover { background: #0b5ed7; border-color: #0a58ca; }
   .btn-primary:disabled { background: #6ea8fe; border-color: #6ea8fe; cursor: default; }
-.district-table {
+button:focus,
+input:focus,
+a:focus,
+.leaflet-container:focus,
+.leaflet-container *:focus {
+  outline: none;
+}
+
+  .district-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 30px 0;   /* horizontal spacing between columns */
@@ -83,7 +91,6 @@ h1 {
   }
   .errbox h4 { color: #c0392b; margin: 0 0 .4rem; }
   .errbox p { margin: 0; }
-
   #map { height: 450px; border-radius: 4px; }
   .leaflet-container { font: inherit; }
 </style>
@@ -126,7 +133,7 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
 
 let marker = null;
 let layersControl = null;
-const drawn = {};          // key -> Leaflet layer currently on the map
+const drawn = {};          // key -> Leaflet layer (built lazily, not always on the map)
 const geojsonCache = {};   // file -> parsed GeoJSON (lazy-loaded once)
 
 async function loadGeojson(file) {
@@ -154,8 +161,10 @@ function rampColor(cfg, value, domain){
 function esc(s){ return String(s).replace(/[&<>"]/g, c =>
   ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
 
-function drawLayer(cfg, gj){
-  if (drawn[cfg.key]) map.removeLayer(drawn[cfg.key]);
+// Builds (but does NOT add to the map) the Leaflet layer for one district set.
+// Layers are cached in `drawn` so repeated lookups don't rebuild them.
+function buildLayer(cfg, gj){
+  if (drawn[cfg.key]) return drawn[cfg.key];
   const domain = gj.features.map(f => String(f.properties[DISTRICT_FIELD]));
   drawn[cfg.key] = L.geoJSON(gj, {
     style: f => ({
@@ -167,14 +176,24 @@ function drawLayer(cfg, gj){
       lyr.on("mouseover", () => lyr.setStyle({ weight:4, fillOpacity:0.6 }));
       lyr.on("mouseout",  () => lyr.setStyle({ weight:2, fillOpacity:0.35 }));
     }
-  }).addTo(map);
+  });
+  return drawn[cfg.key];
 }
 
+// Rebuilds the layer-switcher control as "base layers" (radio-button style),
+// so choosing one district map automatically hides whichever was showing.
 function rebuildLayersControl(){
   if (layersControl) map.removeControl(layersControl);
-  const overlays = {};
-  for (const cfg of LAYERS) if (drawn[cfg.key]) overlays[cfg.group] = drawn[cfg.key];
-  layersControl = L.control.layers(null, overlays, { collapsed:false }).addTo(map);
+  const baseLayers = {};
+  for (const cfg of LAYERS) if (drawn[cfg.key]) baseLayers[cfg.group] = drawn[cfg.key];
+  layersControl = L.control.layers(baseLayers, null, { collapsed:false }).addTo(map);
+
+  // Make sure exactly one district layer is visible after a lookup.
+  const anyShown = LAYERS.some(cfg => drawn[cfg.key] && map.hasLayer(drawn[cfg.key]));
+  if (!anyShown) {
+    const first = LAYERS.find(cfg => drawn[cfg.key]);
+    if (first) drawn[first.key].addTo(map);
+  }
 }
 
 // ── Geocode (same Nominatim call the Shiny app used) ────────────────────────
@@ -197,10 +216,7 @@ function districtAt(gj, lon, lat){
   return null;
 }
 
-// ── Result box (Address bar + three badges) ─────────────────────────────────
-
-
-//test for how to format the values better
+// ── Result box (Address bar + district table) ───────────────────────────────
 function renderResult(displayName, values) {
   document.getElementById("result_box").innerHTML = `
     <div class="addr-bar">
@@ -225,6 +241,12 @@ function renderResult(displayName, values) {
     </table>
   `;
 }
+
+function renderNotFound(address){
+  document.getElementById("result_box").innerHTML =
+    `<div class="errbox"><h4>Address not found</h4><p>Could not geocode "${esc(address)}". Try a more complete address.</p></div>`;
+}
+
 // ── Lookup ──────────────────────────────────────────────────────────────────
 async function runLookup(){
   const btn = document.getElementById("lookup");
@@ -240,7 +262,7 @@ async function runLookup(){
     for (const cfg of LAYERS) {
       const gj = await loadGeojson(cfg.file);
       values[cfg.key] = districtAt(gj, geo.lon, geo.lat);
-      drawLayer(cfg, gj);
+      buildLayer(cfg, gj);
     }
     rebuildLayersControl();
     renderResult(geo.display_name, values);

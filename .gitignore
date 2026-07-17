@@ -4,4 +4,11 @@ INTERN_NOTES.md
 INTERN_NOTES.html
 .DS_Store
 .Rhistory
-.DS_Store
+
+# Downloaded screenshots / mockups — do not commit
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.screenshot

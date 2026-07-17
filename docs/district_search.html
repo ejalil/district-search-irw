@@ -53,9 +53,9 @@
   }
   #address {
     flex: 1 1 420px; min-width: 0;
-    padding: 13px 16px; font-size: 1rem; font-family: inherit;
+    padding: 12px 15px; font-size: 1rem; font-family: inherit;
     color: var(--text); background: #fff;
-    border: 1px solid var(--border); border-radius: 8px;
+    border: 1px solid var(--border); border-radius: 4px;
     transition: border-color .12s, box-shadow .12s;
   }
   #address::placeholder { color: var(--text-muted); }
@@ -65,100 +65,104 @@
   }
   #lookup {
     flex: 0 0 auto;
-    padding: 13px 26px; font-size: 0.95rem; font-weight: 600; font-family: inherit;
+    padding: 12px 26px; font-size: 0.92rem; font-weight: 600; font-family: inherit;
     color: #fff; background: var(--accent); border: 1px solid var(--accent);
-    border-radius: 8px; cursor: pointer; white-space: nowrap;
+    border-radius: 4px; cursor: pointer; white-space: nowrap;
     transition: background .12s, border-color .12s;
   }
   #lookup:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
   #lookup:disabled { opacity: .6; cursor: default; }
 
-  /* ── RESULT / ADDRESS BAR + ERRORS ── */
-  #result_box { margin: 26px auto 0; max-width: 900px; }
-  .addr-bar {
-    background: var(--bg-card); border: 1px solid var(--border);
-    padding: 11px 16px; border-radius: 8px;
-    font-size: 0.85rem; color: var(--text-secondary); text-align: center;
+  /* ── LEDE: the answer, written as a sentence ── */
+  #result_box { margin: 30px auto 0; max-width: 860px; text-align: center; }
+  .lede-addr {
+    font-size: 0.76rem; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px;
   }
-  .addr-bar b { color: var(--text); font-weight: 600; }
+  .lede-districts {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1.3rem; line-height: 1.45; margin-top: 8px;
+  }
+  .lede-districts b { font-weight: 700; }
   .errbox {
-    border-left: 4px solid var(--red); background: rgba(192,57,43,0.06);
-    padding: 16px 20px; border-radius: 8px;
+    border-left: 3px solid var(--red); background: rgba(192,57,43,0.05);
+    padding: 14px 18px; border-radius: 3px; text-align: left;
   }
-  .errbox h4 { color: var(--red); margin: 0 0 .3rem; font-size: 1rem; }
-  .errbox p { margin: 0; font-size: 0.9rem; color: var(--text-secondary); }
+  .errbox h4 { color: var(--red); margin: 0 0 .25rem; font-size: 0.95rem; }
+  .errbox p { margin: 0; font-size: 0.88rem; color: var(--text-secondary); }
 
   /* ── TWO-COLUMN: map | representatives ── */
   .page-flex {
-    display: flex; gap: 40px; align-items: flex-start; margin-top: 32px;
+    display: flex; gap: 44px; align-items: flex-start; margin-top: 36px;
   }
   .map-col, .rep-col { flex: 1 1 50%; min-width: 0; }
-  #map { height: 560px; width: 100%; border-radius: 10px; border: 1px solid var(--border); }
+  #map { height: 540px; width: 100%; border-radius: 4px; border: 1px solid var(--border); }
   .leaflet-container { font: inherit; }
   button:focus, input:focus, a:focus,
   .leaflet-container:focus, .leaflet-container *:focus { outline: none; }
 
-  /* Section header ("ribbon") — Lora + fading rule, matching the finance pages */
-  .ribbon {
-    display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px;
+  /* Editorial tabs above the map — replaces the default Leaflet layer widget */
+  .map-tabs {
+    display: flex; gap: 24px;
+    border-bottom: 1px solid var(--border); margin-bottom: 12px;
   }
+  .map-tabs button {
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.3px;
+    color: var(--text-muted); padding: 2px 1px 10px;
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: color .12s, border-color .12s;
+  }
+  .map-tabs button:hover { color: var(--text); }
+  .map-tabs button.active { color: var(--text); border-bottom-color: var(--accent); }
+
+  /* Section header — Lora + fading rule, matching the finance pages */
+  .ribbon { display: flex; align-items: baseline; gap: 14px; margin-bottom: 2px; }
   .ribbon-text {
-    font-family: 'Lora', serif; font-size: 1.5rem; font-weight: 700;
+    font-family: 'Lora', serif; font-size: 1.45rem; font-weight: 700;
     color: var(--text); line-height: 1.2; white-space: nowrap;
   }
   .ribbon::after {
     content: ''; flex: 1; height: 2px;
     background: linear-gradient(to right, var(--border), transparent); margin-top: 4px;
   }
-  .rep-sub {
-    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
-    color: var(--text-muted); margin: 22px 0 10px;
-  }
-  .rep-sub:first-of-type { margin-top: 14px; }
 
-  /* ── REP CARDS ── */
-  .rep-hint {
-    color: var(--text-muted); font-size: 0.9rem;
-    padding: 24px 4px; text-align: left;
+  /* ── REPRESENTATIVES: a ruled newspaper list, not cards ── */
+  .rep-kicker {
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--text-muted); margin: 26px 0 2px;
   }
-  .rep-card {
-    display: flex; align-items: center; gap: 14px;
-    padding: 13px 14px; border: 1px solid var(--border); border-radius: 8px;
-    margin-bottom: 10px; text-decoration: none; color: inherit;
-    background: #fff; transition: background .12s, border-color .12s, box-shadow .12s;
+  .rep-kicker:first-of-type { margin-top: 18px; }
+  .rep-hint { color: var(--text-muted); font-size: 0.9rem; padding: 22px 2px; }
+  .rep-row {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
+    padding: 14px 2px; border-bottom: 1px solid var(--border);
+    text-decoration: none; color: inherit;
   }
-  a.rep-card:hover {
-    background: var(--bg-hover); border-color: #d7d7ea;
-    box-shadow: 0 2px 10px rgba(20,20,40,0.05);
+  .rep-name {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1.1rem; font-weight: 700; line-height: 1.3;
   }
-  .rep-dot {
-    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  a.rep-row:hover .rep-name { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+  .rep-party {
+    font-size: 0.66rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; margin-left: 8px;
+    position: relative; top: -1px;
   }
-  .rep-body { flex: 1 1 auto; min-width: 0; }
-  .rep-name { font-weight: 600; font-size: 0.98rem; line-height: 1.25; }
-  .rep-role { font-size: 0.8rem; color: var(--text-secondary); margin-top: 1px; }
-  .rep-tag {
-    flex: 0 0 auto; font-size: 0.68rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1px;
-  }
+  .rep-role { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
   .rep-cta {
-    flex: 0 0 auto; font-size: 0.8rem; font-weight: 600; color: var(--accent);
-    opacity: 0; transform: translateX(-4px); transition: opacity .12s, transform .12s;
-    white-space: nowrap;
+    font-size: 0.78rem; font-weight: 600; color: var(--accent-dark);
+    white-space: nowrap; flex: 0 0 auto;
   }
-  a.rep-card:hover .rep-cta { opacity: 1; transform: translateX(0); }
-  .rep-card.is-static { cursor: default; }
-  .rep-note {
-    flex: 0 0 auto; font-size: 0.72rem; color: var(--text-muted); font-style: italic;
-    white-space: nowrap;
-  }
+  a.rep-row:hover .rep-cta { text-decoration: underline; }
+  .rep-row.is-empty .rep-name { color: var(--text-muted); font-weight: 400; font-style: italic; }
 
   @media (max-width: 820px) {
     .page-flex { flex-direction: column; }
     .map-col, .rep-col { flex: 1 1 100%; width: 100%; }
     #map { height: 420px; }
-    .page-header h1 { font-size: 2rem; }
-    .rep-cta { display: none; }
+    .lede-districts { font-size: 1.1rem; }
+    .map-tabs { gap: 16px; }
   }
 </style>
 </head>
@@ -167,13 +171,18 @@
 
   <div class="search">
     <input type="text" id="address" placeholder="e.g. 123 Main St, Portland, ME 04101" />
-    <button id="lookup">Look Up Districts</button>
+    <button id="lookup">Find my districts</button>
   </div>
 
   <div id="result_box"></div>
 
   <div class="page-flex" id="results">
     <div class="map-col">
+      <div class="map-tabs" id="map_tabs">
+        <button data-layer="congressional" class="active">U.S. Congress</button>
+        <button data-layer="state_senate">State Senate</button>
+        <button data-layer="state_house">State House</button>
+      </div>
       <div id="map"></div>
     </div>
     <div class="rep-col">
@@ -188,7 +197,7 @@
 
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
-// VERSION A — Voter Guide. Rep cards link out to the campaign-finance pages.
+// VERSION A — Voter Guide. Rep rows link out to the campaign-finance pages.
 // To make Version B (Statehouse hub), swap CAMPAIGN_FINANCE_LINK for the
 // district/lawmaker page URLs and change RESULT_ACTION_LABEL below. Nothing
 // else needs to change.
@@ -197,7 +206,7 @@ const RESULT_ACTION_LABEL = "Campaign finance →";
 
 // PLACEHOLDER LINKS — real per-lawmaker URLs aren't finalized yet. Each function
 // receives (district, rep) and returns a URL, or null for "no page yet" (renders
-// a non-clickable card). Wire the real URLs here when they're ready.
+// a plain, non-clickable row). Wire the real URLs here when they're ready.
 const CF_BASE = "https://aarushisahejpal.github.io/maine-monitor-campaign-finance/viz/";
 const CAMPAIGN_FINANCE_LINK = {
   us_senate:     (d, r) => null,                              // TODO: federal finance page
@@ -218,11 +227,11 @@ const PARTY = {
 const DISTRICT_FIELD = "DISTRICT";
 const LAYERS = [
   { key:"congressional", file:"Maine_Voting_Districts_2021_US_Congress.geojson",
-    group:"Congressional Districts", labelPrefix:"Congressional District", border:"#2471a3" },
-  { key:"state_house", file:"Maine_Voting_Districts_2021_House.geojson",
-    group:"State House Districts", labelPrefix:"State House District", border:"#a04000" },
+    label:"Congressional District", border:"#2471a3" },
   { key:"state_senate", file:"Maine_Voting_Districts_2021_State_Senate.geojson",
-    group:"State Senate Districts", labelPrefix:"State Senate District", border:"#6c3483" },
+    label:"State Senate District", border:"#6c3483" },
+  { key:"state_house", file:"Maine_Voting_Districts_2021_House.geojson",
+    label:"State House District", border:"#a04000" },
 ];
 
 const HIGHLIGHT_FILL = "#8989f1";      // brand periwinkle
@@ -237,8 +246,8 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
 }).addTo(map);
 
 let marker = null;
-let layersControl = null;
 let maineBoundary = null;
+let activeLayerKey = "congressional";
 const drawn = {};
 const highlighted = {};
 const geojsonCache = {};
@@ -309,18 +318,22 @@ function refreshLayerStyle(cfg){
     lyr.setStyle(styleFor(cfg, lyr.feature.properties[DISTRICT_FIELD], highlighted[cfg.key])));
 }
 
-function rebuildLayersControl(){
-  if (layersControl) map.removeControl(layersControl);
-  const baseLayers = {};
-  for (const cfg of LAYERS) if (drawn[cfg.key]) baseLayers[cfg.group] = drawn[cfg.key];
-  layersControl = L.control.layers(baseLayers, null, { collapsed:false }).addTo(map);
-
-  const anyShown = LAYERS.some(cfg => drawn[cfg.key] && map.hasLayer(drawn[cfg.key]));
-  if (!anyShown) {
-    const first = LAYERS.find(cfg => drawn[cfg.key]);
-    if (first) drawn[first.key].addTo(map);
+// ── Map tabs: show exactly one district layer at a time ─────────────────────
+async function showLayer(key){
+  activeLayerKey = key;
+  document.querySelectorAll("#map_tabs button").forEach(b =>
+    b.classList.toggle("active", b.dataset.layer === key));
+  const cfg = LAYERS.find(c => c.key === key);
+  const gj = await loadGeojson(cfg.file);
+  buildLayer(cfg, gj);
+  for (const c of LAYERS) {
+    if (drawn[c.key] && c.key !== key && map.hasLayer(drawn[c.key])) map.removeLayer(drawn[c.key]);
   }
+  if (!map.hasLayer(drawn[key])) drawn[key].addTo(map);
+  if (marker) marker.bringToFront();
 }
+document.querySelectorAll("#map_tabs button").forEach(b =>
+  b.addEventListener("click", () => showLayer(b.dataset.layer)));
 
 // ── Geocode (Nominatim) ──────────────────────────────────────────────────────
 async function geocode(address){
@@ -342,10 +355,22 @@ function districtAt(gj, lon, lat){
   return null;
 }
 
-// ── Result box ──────────────────────────────────────────────────────────────
-function renderResult(displayName) {
-  document.getElementById("result_box").innerHTML =
-    `<div class="addr-bar"><b>Showing results for:</b> ${esc(displayName)}</div>`;
+// ── Lede: state the answer as a sentence ────────────────────────────────────
+function renderResult(displayName, values) {
+  const parts = LAYERS
+    .filter(c => values[c.key] != null)
+    .map(c => `<b>${esc(c.label)} ${esc(values[c.key])}</b>`);
+  let sentence;
+  if (!parts.length) {
+    sentence = "We couldn't match this address to any Maine districts.";
+  } else if (parts.length === 1) {
+    sentence = `This address is in ${parts[0]}.`;
+  } else {
+    sentence = `This address is in ${parts.slice(0,-1).join(", ")} and ${parts[parts.length-1]}.`;
+  }
+  document.getElementById("result_box").innerHTML = `
+    <div class="lede-addr">${esc(displayName)}</div>
+    <div class="lede-districts">${sentence}</div>`;
 }
 
 function renderNotFound(address){
@@ -353,7 +378,7 @@ function renderNotFound(address){
     `<div class="errbox"><h4>Address not found</h4><p>We couldn't locate "${esc(address)}". Try adding a town and ZIP — e.g. "123 Main St, Portland, ME 04101".</p></div>`;
 }
 
-// ── Representative cards ─────────────────────────────────────────────────────
+// ── Representatives: ruled list rows ────────────────────────────────────────
 function repsFor(layer, district){
   if (!REPS) return [];
   if (layer === "us_senate") return REPS.us_senate || [];   // statewide — no district
@@ -361,42 +386,37 @@ function repsFor(layer, district){
   return (REPS[layer] && REPS[layer][String(district)]) || [];
 }
 
-// One clickable (or static) card per officeholder.
-function repCard(layer, roleLabel, district, rep){
+function repRow(layer, roleLabel, district, rep){
   const party = PARTY[rep.party] || { label: rep.party || "", color: "var(--text-muted)" };
   const role = district != null ? `${roleLabel} · District ${district}` : roleLabel;
   const href = (CAMPAIGN_FINANCE_LINK[layer] || (() => null))(district, rep);
   const inner = `
-    <span class="rep-dot" style="background:${party.color}"></span>
-    <div class="rep-body">
-      <div class="rep-name">${esc(rep.name)}</div>
+    <div>
+      <span class="rep-name">${esc(rep.name)}</span><span class="rep-party" style="color:${party.color}">${esc(party.label)}</span>
       <div class="rep-role">${esc(role)}</div>
-    </div>
-    <span class="rep-tag" style="color:${party.color}">${esc(party.label)}</span>`;
+    </div>`;
   if (href) {
-    return `<a class="rep-card" href="${esc(href)}" target="_blank" rel="noopener">${inner}<span class="rep-cta">${RESULT_ACTION_LABEL}</span></a>`;
+    return `<a class="rep-row" href="${esc(href)}" target="_blank" rel="noopener">${inner}<span class="rep-cta">${RESULT_ACTION_LABEL}</span></a>`;
   }
-  return `<div class="rep-card is-static">${inner}<span class="rep-note">page coming soon</span></div>`;
+  return `<div class="rep-row">${inner}</div>`;
 }
 
-// A labeled group of cards for one layer (may be 0, 1, or 2 officeholders).
 function repGroup(layer, roleLabel, district){
   const reps = repsFor(layer, district);
   if (!reps.length) {
-    return `<div class="rep-card is-static">
-      <span class="rep-dot" style="background:var(--text-muted)"></span>
-      <div class="rep-body"><div class="rep-name" style="color:var(--text-muted)">Not found</div>
+    return `<div class="rep-row is-empty">
+      <div><span class="rep-name">Not found</span>
       <div class="rep-role">${esc(roleLabel)}${district != null ? " · District " + esc(district) : ""}</div></div></div>`;
   }
-  return reps.map(r => repCard(layer, roleLabel, district, r)).join("");
+  return reps.map(r => repRow(layer, roleLabel, district, r)).join("");
 }
 
 function renderRepresentatives(values){
   document.getElementById("rep_box").innerHTML = `
-    <div class="rep-sub">Federal</div>
-    ${repGroup("us_senate", "U.S. Senate", null)}
+    <div class="rep-kicker">In Washington</div>
+    ${repGroup("us_senate", "U.S. Senator · represents all of Maine", null)}
     ${repGroup("congressional", "U.S. House", values.congressional)}
-    <div class="rep-sub">State</div>
+    <div class="rep-kicker">In Augusta</div>
     ${repGroup("state_senate", "State Senate", values.state_senate)}
     ${repGroup("state_house", "State House", values.state_house)}
   `;
@@ -408,7 +428,7 @@ async function runLookup(){
   const address = document.getElementById("address").value.trim();
   if (!address) return;
 
-  btn.disabled = true; btn.textContent = "Looking up…";
+  btn.disabled = true; btn.textContent = "Searching…";
   try {
     const geo = await geocode(address);
     if (!geo) { renderNotFound(address); return; }
@@ -421,19 +441,21 @@ async function runLookup(){
       buildLayer(cfg, gj);
       refreshLayerStyle(cfg);
     }
-    rebuildLayersControl();
+    await showLayer(activeLayerKey);
     await repsReady;
-    renderResult(geo.display_name);
+    renderResult(geo.display_name, values);
     renderRepresentatives(values);
     map.invalidateSize();
 
     if (marker) map.removeLayer(marker);
-    marker = L.marker([geo.lat, geo.lon]).addTo(map);
+    marker = L.circleMarker([geo.lat, geo.lon], {
+      radius: 6, color: "#fff", weight: 2, fillColor: "#1a1a1a", fillOpacity: 1
+    }).addTo(map);
   } catch (err) {
     document.getElementById("result_box").innerHTML =
       `<div class="errbox"><h4>Something went wrong</h4><p>${esc(err.message)}</p></div>`;
   } finally {
-    btn.disabled = false; btn.textContent = "Look Up Districts";
+    btn.disabled = false; btn.textContent = "Find my districts";
   }
 }
 

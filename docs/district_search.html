@@ -24,14 +24,17 @@
     --accent: #8989f1;    /* Maine Monitor periwinkle */
     --accent-dark: #6b6bd9;
     --text: #1a1a1a;
-    --text-secondary: #666;
-    --text-muted: #999;
+    --text-secondary: #4a4a4a;   /* darker grays — legible for older readers */
+    --text-muted: #6e6e6e;
     --border: #e5e5e5;
     --bg-hover: #fafafc;
     --bg-card: #f9f9fb;
   }
 
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* Larger base type for an older readership — every rem below scales off this. */
+  html { font-size: 17px; }
 
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -52,7 +55,7 @@
     margin: 40px auto 0; max-width: 680px;
   }
   #address {
-    flex: 1 1 420px; min-width: 0;
+    flex: 1 1 420px; min-width: 0; min-height: 48px;
     padding: 12px 15px; font-size: 1rem; font-family: inherit;
     color: var(--text); background: #fff;
     border: 1px solid var(--border); border-radius: 4px;
@@ -64,8 +67,8 @@
     box-shadow: 0 0 0 3px rgba(137,137,241,0.18);
   }
   #lookup {
-    flex: 0 0 auto;
-    padding: 12px 26px; font-size: 0.92rem; font-weight: 600; font-family: inherit;
+    flex: 0 0 auto; min-height: 48px;
+    padding: 12px 26px; font-size: 0.95rem; font-weight: 600; font-family: inherit;
     color: #fff; background: var(--accent); border: 1px solid var(--accent);
     border-radius: 4px; cursor: pointer; white-space: nowrap;
     transition: background .12s, border-color .12s;
@@ -98,8 +101,16 @@
   .map-col, .rep-col { flex: 1 1 50%; min-width: 0; }
   #map { height: 540px; width: 100%; border-radius: 4px; border: 1px solid var(--border); }
   .leaflet-container { font: inherit; }
-  button:focus, input:focus, a:focus,
-  .leaflet-container:focus, .leaflet-container *:focus { outline: none; }
+  /* Keep keyboard focus visible; only suppress the mouse-click ring. */
+  :focus:not(:focus-visible) { outline: none; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent-dark); outline-offset: 2px;
+  }
+  /* Bigger zoom buttons — easier targets on touch and for older readers */
+  .leaflet-control-zoom a {
+    width: 38px !important; height: 38px !important;
+    line-height: 38px !important; font-size: 20px !important;
+  }
 
   /* Editorial tabs above the map — replaces the default Leaflet layer widget */
   .map-tabs {
@@ -108,8 +119,8 @@
   }
   .map-tabs button {
     background: none; border: none; cursor: pointer; font-family: inherit;
-    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.3px;
-    color: var(--text-muted); padding: 2px 1px 10px;
+    font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.3px;
+    color: var(--text-muted); padding: 6px 2px 12px;
     border-bottom: 2px solid transparent; margin-bottom: -1px;
     transition: color .12s, border-color .12s;
   }
@@ -136,7 +147,7 @@
   .rep-hint { color: var(--text-muted); font-size: 0.9rem; padding: 22px 2px; }
   .rep-row {
     display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
-    padding: 14px 2px; border-bottom: 1px solid var(--border);
+    padding: 16px 2px; border-bottom: 1px solid var(--border);
     text-decoration: none; color: inherit;
   }
   .rep-name {
@@ -151,18 +162,20 @@
   }
   .rep-role { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
   .rep-cta {
-    font-size: 0.78rem; font-weight: 600; color: var(--accent-dark);
+    font-size: 0.8rem; font-weight: 600; color: var(--accent-dark);
     white-space: nowrap; flex: 0 0 auto;
+    text-decoration: underline; text-underline-offset: 3px;  /* reads as a link, even on touch */
   }
-  a.rep-row:hover .rep-cta { text-decoration: underline; }
   .rep-row.is-empty .rep-name { color: var(--text-muted); font-weight: 400; font-style: italic; }
 
   @media (max-width: 820px) {
-    .page-flex { flex-direction: column; }
+    .page-flex { flex-direction: column; gap: 36px; }
     .map-col, .rep-col { flex: 1 1 100%; width: 100%; }
-    #map { height: 420px; }
-    .lede-districts { font-size: 1.1rem; }
+    .rep-col { order: -1; }        /* the names are the payoff — map comes second */
+    #map { height: 380px; }
+    .lede-districts { font-size: 1.15rem; }
     .map-tabs { gap: 16px; }
+    .rep-row { flex-wrap: wrap; row-gap: 4px; }
   }
 </style>
 </head>
@@ -170,7 +183,8 @@
 <div class="container">
 
   <div class="search">
-    <input type="text" id="address" placeholder="e.g. 123 Main St, Portland, ME 04101" />
+    <input type="text" id="address" placeholder="e.g. 123 Main St, Portland, ME 04101"
+           autocomplete="street-address" enterkeyhint="search" />
     <button id="lookup">Find my districts</button>
   </div>
 
@@ -240,7 +254,11 @@ const DEFAULT_FILL = "#d9d9d9";
 
 // ── Map setup (CartoDB Positron) ─────────────────────────────────────────────
 // zoomSnap 0.25 lets fitBounds pick a fractional zoom, so Maine fills the frame.
-const map = L.map("map", { minZoom: 6, zoomSnap: 0.25 }).setView([45.25, -69.0], 6);
+// scrollWheelZoom off: scrolling the article past the embed must not zoom the
+// map. On phones, one-finger drag is off too (so the map can't hijack page
+// scrolling) — pinch-zoom and the +/- buttons still work.
+const map = L.map("map", { minZoom: 6, zoomSnap: 0.25, scrollWheelZoom: false }).setView([45.25, -69.0], 6);
+if (L.Browser.mobile) map.dragging.disable();
 L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
   attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 30
 }).addTo(map);
@@ -338,13 +356,21 @@ document.querySelectorAll("#map_tabs button").forEach(b =>
 // ── Geocode (Nominatim) ──────────────────────────────────────────────────────
 async function geocode(address){
   if (!/maine|,\s*me\b/i.test(address)) address = address + ", Maine";
-  const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q="
+  const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&addressdetails=1&q="
             + encodeURIComponent(address);
   const resp = await fetch(url, { headers:{ "Accept":"application/json" } });
   if (!resp.ok) return null;
   const data = await resp.json();
   if (!data.length) return null;
-  return { lat:+data[0].lat, lon:+data[0].lon, display_name:data[0].display_name };
+  // Read the answer back as a short "street, town, ME zip" line rather than
+  // Nominatim's full seven-clause display_name.
+  const a = data[0].address || {};
+  const street = [a.house_number, a.road].filter(Boolean).join(" ");
+  const town = a.city || a.town || a.village || a.hamlet || "";
+  const zip = ["ME", a.postcode].filter(Boolean).join(" ");
+  const short = [street, town, zip].filter(Boolean).join(", ");
+  return { lat:+data[0].lat, lon:+data[0].lon,
+           display_name: short || data[0].display_name };
 }
 
 function districtAt(gj, lon, lat){

@@ -44,32 +44,12 @@
 
   .container { max-width: 1080px; margin: 0 auto; padding: 0 20px 80px; }
 
-  /* ── HEADER ── */
-  .page-header { padding: 56px 0 20px; text-align: center; }
-  .page-header .kicker {
-    font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 2px; color: var(--accent); margin-bottom: 12px;
-  }
-  .page-header h1 {
-    font-family: 'Lora', Georgia, serif;
-    font-size: 2.6rem; font-weight: 700; color: var(--text);
-    letter-spacing: -0.03em; line-height: 1.12;
-  }
-  .page-header .dek {
-    font-family: 'Lora', Georgia, serif; font-style: italic;
-    font-size: 1.1rem; color: var(--text-secondary);
-    margin: 12px auto 0; max-width: 540px;
-  }
-  .header-rule {
-    width: 60px; height: 3px; background: var(--accent);
-    margin: 26px auto 0; border: none;
-  }
-
   /* ── SEARCH ── */
+  /* No page header — this embeds on themainemonitor.org, which supplies its own. */
   .search {
     display: flex; gap: 10px; justify-content: center;
     align-items: stretch; flex-wrap: wrap;
-    margin: 36px auto 0; max-width: 680px;
+    margin: 40px auto 0; max-width: 680px;
   }
   #address {
     flex: 1 1 420px; min-width: 0;
@@ -185,13 +165,6 @@
 <body>
 <div class="container">
 
-  <header class="page-header">
-    <div class="kicker">The Maine Monitor</div>
-    <h1>District Search</h1>
-    <p class="dek">Enter your address to find the districts you live in and the lawmakers who represent you.</p>
-    <hr class="header-rule">
-  </header>
-
   <div class="search">
     <input type="text" id="address" placeholder="e.g. 123 Main St, Portland, ME 04101" />
     <button id="lookup">Look Up Districts</button>
@@ -257,7 +230,8 @@ const HIGHLIGHT_BORDER = "#5b5bd6";
 const DEFAULT_FILL = "#d9d9d9";
 
 // ── Map setup (CartoDB Positron) ─────────────────────────────────────────────
-const map = L.map("map", { minZoom: 6 }).setView([45.25, -69.0], 6);
+// zoomSnap 0.25 lets fitBounds pick a fractional zoom, so Maine fills the frame.
+const map = L.map("map", { minZoom: 6, zoomSnap: 0.25 }).setView([45.25, -69.0], 6);
 L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
   attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 30
 }).addTo(map);
@@ -296,7 +270,7 @@ async function initMaineView() {
     L.geoJSON(maineBoundary, { style: { fill: false, color: "#999", weight: 1.5 }, interactive: false }).addTo(map);
 
     const bounds = L.geoJSON(maineBoundary).getBounds();
-    map.fitBounds(bounds, { padding: [7.5,7.5] });
+    map.fitBounds(bounds, { padding: [2,2] });
     map.setMaxBounds(bounds.pad(0.4));
   } catch (err) {
     console.error("Could not build Maine mask:", err);
@@ -320,7 +294,6 @@ function buildLayer(cfg, gj){
   drawn[cfg.key] = L.geoJSON(gj, {
     style: f => styleFor(cfg, f.properties[DISTRICT_FIELD], highlighted[cfg.key]),
     onEachFeature: (f, lyr) => {
-      lyr.bindTooltip(cfg.labelPrefix + " " + f.properties[DISTRICT_FIELD], { sticky:true });
       lyr.on("mouseover", () => lyr.setStyle({ weight: 4 }));
       lyr.on("mouseout", () =>
         lyr.setStyle(styleFor(cfg, lyr.feature.properties[DISTRICT_FIELD], highlighted[cfg.key])));

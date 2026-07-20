@@ -126,6 +126,14 @@
   }
   .map-tabs button:hover { color: var(--text); }
   .map-tabs button.active { color: var(--text); border-bottom-color: var(--accent); }
+  .map-reset {
+    margin-left: auto; text-transform: none !important; letter-spacing: 0 !important;
+    font-weight: 600 !important; font-size: 0.8rem !important;
+    color: var(--accent-dark) !important;
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  .map-reset:hover { color: var(--accent-dark) !important; }
+  .map-reset[hidden] { display: none; }
 
   /* Section header — Lora + fading rule, matching the finance pages */
   .ribbon { display: flex; align-items: baseline; gap: 14px; margin-bottom: 2px; }
@@ -196,6 +204,7 @@
         <button data-layer="congressional" class="active">U.S. Congress</button>
         <button data-layer="state_senate">State Senate</button>
         <button data-layer="state_house">State House</button>
+        <button id="map_reset" class="map-reset" hidden>Show all of Maine</button>
       </div>
       <div id="map"></div>
     </div>
@@ -265,6 +274,7 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
 
 let marker = null;
 let maineBoundary = null;
+let maineBounds = null;
 let activeLayerKey = "congressional";
 const drawn = {};
 const highlighted = {};
@@ -296,9 +306,9 @@ async function initMaineView() {
     L.geoJSON(mask, { style: { fillColor: "#e9e9ef", fillOpacity: 0.85, stroke: false }, interactive: false }).addTo(map);
     L.geoJSON(maineBoundary, { style: { fill: false, color: "#999", weight: 1.5 }, interactive: false }).addTo(map);
 
-    const bounds = L.geoJSON(maineBoundary).getBounds();
-    map.fitBounds(bounds, { padding: [2,2] });
-    map.setMaxBounds(bounds.pad(0.4));
+    maineBounds = L.geoJSON(maineBoundary).getBounds();
+    map.fitBounds(maineBounds, { padding: [2,2] });
+    map.setMaxBounds(maineBounds.pad(0.4));
   } catch (err) {
     console.error("Could not build Maine mask:", err);
   }
@@ -311,7 +321,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c =>
 function styleFor(cfg, districtValue, highlightValue) {
   const isHighlighted = highlightValue != null && String(districtValue) === String(highlightValue);
   if (isHighlighted) {
-    return { fillColor: HIGHLIGHT_FILL, fillOpacity: 0.7, color: HIGHLIGHT_BORDER, weight: 3 };
+    return { fillColor: HIGHLIGHT_FILL, fillOpacity: 0.45, color: HIGHLIGHT_BORDER, weight: 3 };
   }
   return { fillColor: DEFAULT_FILL, fillOpacity: 0.25, color: cfg.border, weight: 1 };
 }
@@ -339,7 +349,7 @@ function refreshLayerStyle(cfg){
 // ── Map tabs: show exactly one district layer at a time ─────────────────────
 async function showLayer(key){
   activeLayerKey = key;
-  document.querySelectorAll("#map_tabs button").forEach(b =>
+  document.querySelectorAll("#map_tabs button[data-layer]").forEach(b =>
     b.classList.toggle("active", b.dataset.layer === key));
   const cfg = LAYERS.find(c => c.key === key);
   const gj = await loadGeojson(cfg.file);
@@ -350,8 +360,13 @@ async function showLayer(key){
   if (!map.hasLayer(drawn[key])) drawn[key].addTo(map);
   if (marker) marker.bringToFront();
 }
-document.querySelectorAll("#map_tabs button").forEach(b =>
+document.querySelectorAll("#map_tabs button[data-layer]").forEach(b =>
   b.addEventListener("click", () => showLayer(b.dataset.layer)));
+
+// "Show all of Maine" — zoom back out to the full state after a lookup zoom.
+document.getElementById("map_reset").addEventListener("click", () => {
+  if (maineBounds) map.flyToBounds(maineBounds, { padding: [2,2], duration: 0.8 });
+});
 
 // ── Geocode (Nominatim) ──────────────────────────────────────────────────────
 async function geocode(address){
@@ -477,6 +492,11 @@ async function runLookup(){
     marker = L.circleMarker([geo.lat, geo.lon], {
       radius: 6, color: "#fff", weight: 2, fillColor: "#1a1a1a", fillOpacity: 1
     }).addTo(map);
+
+    // Ease into the region around the address — close enough to orient
+    // ("that's my corner of Maine"), not so close the district context is lost.
+    map.flyTo([geo.lat, geo.lon], 8.5, { duration: 0.9 });
+    document.getElementById("map_reset").hidden = false;
   } catch (err) {
     document.getElementById("result_box").innerHTML =
       `<div class="errbox"><h4>Something went wrong</h4><p>${esc(err.message)}</p></div>`;

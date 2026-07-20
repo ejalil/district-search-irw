@@ -50,31 +50,29 @@
 
   /* ── SEARCH ── */
   /* No page header — this embeds on themainemonitor.org, which supplies its own. */
+  /* One attached bar: square corners, ink border, button flush to the field. */
   .search {
-    display: flex; gap: 10px; justify-content: center;
-    align-items: stretch; flex-wrap: wrap;
-    margin: 40px auto 0; max-width: 680px;
+    display: flex; align-items: stretch;
+    margin: 40px auto 0; max-width: 620px;
   }
   #address {
-    flex: 1 1 420px; min-width: 0; min-height: 48px;
-    padding: 12px 15px; font-size: 1rem; font-family: inherit;
+    flex: 1 1 auto; min-width: 0; min-height: 48px;
+    padding: 12px 14px; font-size: 1rem; font-family: inherit;
     color: var(--text); background: #fff;
-    border: 1px solid var(--border); border-radius: 4px;
-    transition: border-color .12s, box-shadow .12s;
+    border: 2px solid var(--text); border-right: 0; border-radius: 0;
+    transition: background .12s;
   }
   #address::placeholder { color: var(--text-muted); }
-  #address:focus {
-    outline: 0; border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(137,137,241,0.18);
-  }
+  #address:focus { outline: 0; background: var(--bg-hover); }
   #lookup {
     flex: 0 0 auto; min-height: 48px;
-    padding: 12px 26px; font-size: 0.95rem; font-weight: 600; font-family: inherit;
-    color: #fff; background: var(--accent); border: 1px solid var(--accent);
-    border-radius: 4px; cursor: pointer; white-space: nowrap;
-    transition: background .12s, border-color .12s;
+    padding: 12px 24px; font-size: 0.92rem; font-weight: 600; font-family: inherit;
+    letter-spacing: .03em;
+    color: #fff; background: var(--text); border: 2px solid var(--text);
+    border-radius: 0; cursor: pointer; white-space: nowrap;
+    transition: background .12s;
   }
-  #lookup:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+  #lookup:hover { background: #000; }
   #lookup:disabled { opacity: .6; cursor: default; }
 
   /* ── LEDE: the answer, written as a sentence ── */
@@ -127,14 +125,6 @@
   }
   .map-tabs button:hover { color: var(--text); }
   .map-tabs button.active { color: var(--text); border-bottom-color: var(--accent); }
-  .map-reset {
-    margin-left: auto; text-transform: none !important; letter-spacing: 0 !important;
-    font-weight: 600 !important; font-size: 0.8rem !important;
-    color: var(--accent-dark) !important;
-    text-decoration: underline; text-underline-offset: 3px;
-  }
-  .map-reset:hover { color: var(--accent-dark) !important; }
-  .map-reset[hidden] { display: none; }
 
   /* Section header — Lora + fading rule, matching the finance pages */
   .ribbon { display: flex; align-items: baseline; gap: 14px; margin-bottom: 2px; }
@@ -194,7 +184,7 @@
   <div class="search">
     <input type="text" id="address" placeholder="e.g. 123 Main St, Portland, ME 04101"
            autocomplete="street-address" enterkeyhint="search" />
-    <button id="lookup">Find my districts</button>
+    <button id="lookup">Search</button>
   </div>
 
   <div id="result_box"></div>
@@ -205,7 +195,6 @@
         <button data-layer="congressional" class="active">U.S. Congress</button>
         <button data-layer="state_senate">State Senate</button>
         <button data-layer="state_house">State House</button>
-        <button id="map_reset" class="map-reset" hidden>Show all of Maine</button>
       </div>
       <div id="map"></div>
     </div>
@@ -364,11 +353,6 @@ async function showLayer(key){
 document.querySelectorAll("#map_tabs button[data-layer]").forEach(b =>
   b.addEventListener("click", () => showLayer(b.dataset.layer)));
 
-// "Show all of Maine" — zoom back out to the full state after a lookup zoom.
-document.getElementById("map_reset").addEventListener("click", () => {
-  if (maineBounds) map.flyToBounds(maineBounds, { padding: [2,2], duration: 0.8 });
-});
-
 // ── Geocode (Nominatim) ──────────────────────────────────────────────────────
 async function geocode(address){
   if (!/maine|,\s*me\b/i.test(address)) address = address + ", Maine";
@@ -497,12 +481,11 @@ async function runLookup(){
     // Ease into the region around the address — close enough to orient
     // ("that's my corner of Maine"), not so close the district context is lost.
     map.flyTo([geo.lat, geo.lon], 8.5, { duration: 0.9 });
-    document.getElementById("map_reset").hidden = false;
   } catch (err) {
     document.getElementById("result_box").innerHTML =
       `<div class="errbox"><h4>Something went wrong</h4><p>${esc(err.message)}</p></div>`;
   } finally {
-    btn.disabled = false; btn.textContent = "Find my districts";
+    btn.disabled = false; btn.textContent = "Search";
   }
 }
 

@@ -12,3 +12,6 @@ INTERN_NOTES.html
 *.gif
 *.webp
 *.screenshot
+
+# Local reference spreadsheets (e.g. link-out lists) — baked into the code
+*.xlsx

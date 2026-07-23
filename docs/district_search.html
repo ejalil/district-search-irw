@@ -76,16 +76,22 @@
   #lookup:disabled { opacity: .6; cursor: default; }
 
   /* ── LEDE: the answer, written as a sentence ── */
-  #result_box { margin: 30px auto 0; max-width: 860px; text-align: center; }
+  /* Nothing but the search bar shows until a lookup succeeds. */
+  #result_box { display: none; margin: 30px auto 0; max-width: 900px; text-align: center; }
+  #results { display: none; }
   .lede-addr {
     font-size: 0.76rem; color: var(--text-muted);
     text-transform: uppercase; letter-spacing: 1px;
   }
-  .lede-districts {
+  /* Districts on one headerless, borderless line, generously spaced */
+  .dist-line {
     font-family: 'Lora', Georgia, serif;
-    font-size: 1.3rem; line-height: 1.45; margin-top: 8px;
+    font-size: 1.25rem; line-height: 1.5; margin-top: 10px;
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 8px 40px;
   }
-  .lede-districts b { font-weight: 700; }
+  .dist-item { white-space: nowrap; color: var(--text-secondary); }
+  .dist-item b { font-weight: 700; color: var(--text); }
   .errbox {
     border-left: 3px solid var(--red); background: rgba(192,57,43,0.05);
     padding: 14px 18px; border-radius: 3px; text-align: left;
@@ -192,7 +198,7 @@
   <div class="page-flex" id="results">
     <div class="map-col">
       <div class="map-tabs" id="map_tabs">
-        <button data-layer="congressional" class="active">U.S. Congress</button>
+        <button data-layer="congressional" class="active">US House</button>
         <button data-layer="state_senate">State Senate</button>
         <button data-layer="state_house">State House</button>
       </div>
@@ -200,9 +206,7 @@
     </div>
     <div class="rep-col">
       <div class="ribbon"><span class="ribbon-text">Your Representatives</span></div>
-      <div id="rep_box">
-        <div class="rep-hint">Search an address to see who represents you.</div>
-      </div>
+      <div id="rep_box"></div>
     </div>
   </div>
 
@@ -210,22 +214,26 @@
 
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
-// VERSION A — Voter Guide. Rep rows link out to the campaign-finance pages.
-// To make Version B (Statehouse hub), swap CAMPAIGN_FINANCE_LINK for the
-// district/lawmaker page URLs and change RESULT_ACTION_LABEL below. Nothing
-// else needs to change.
+// VERSION A — Voter Guide. Rep rows link out to the voter-guide pages.
+// Version B (Statehouse hub) is a fork: point RESULT_LINK at the state-house
+// pages and change RESULT_ACTION_LABEL. Nothing else needs to change.
 // ─────────────────────────────────────────────────────────────────────────────
-const RESULT_ACTION_LABEL = "Campaign finance →";
+const RESULT_ACTION_LABEL = "Voter guide →";
 
-// PLACEHOLDER LINKS — real per-lawmaker URLs aren't finalized yet. Each function
-// receives (district, rep) and returns a URL, or null for "no page yet" (renders
-// a plain, non-clickable row). Wire the real URLs here when they're ready.
-const CF_BASE = "https://aarushisahejpal.github.io/maine-monitor-campaign-finance/viz/";
-const CAMPAIGN_FINANCE_LINK = {
-  us_senate:     (d, r) => null,                              // TODO: federal finance page
-  congressional: (d, r) => null,                              // TODO: federal finance page
-  state_senate:  (d, r) => CF_BASE + "senate.html",          // TODO: swap for per-lawmaker URL
-  state_house:   (d, r) => CF_BASE + "house.html",           // TODO: swap for per-lawmaker URL
+// Where each rep row links. Each function receives (district, rep) and returns a
+// URL, or null for "no page yet" (row renders plain, non-clickable).
+//
+// Version A → the Maine Monitor voter-guide (election) pages, per district.
+// Version B swaps these for the state-house district pages:
+//   state_senate → MM + "maine-state-senate-district-" + d + "/"
+//   state_house  → MM + "maine-state-house-district-"  + d + "/"
+// Federal (U.S. Senate / U.S. House) pages come later.
+const MM = "https://themainemonitor.org/";
+const RESULT_LINK = {
+  us_senate:     (d, r) => null,                                       // federal — later
+  congressional: (d, r) => null,                                       // federal — later
+  state_senate:  (d, r) => MM + "senate-district-" + d + "-elections/",
+  state_house:   (d, r) => MM + "house-district-"  + d + "-elections/",
 };
 
 // Party code → display label + brand color (matches the finance pages).
@@ -240,7 +248,7 @@ const PARTY = {
 const DISTRICT_FIELD = "DISTRICT";
 const LAYERS = [
   { key:"congressional", file:"Maine_Voting_Districts_2021_US_Congress.geojson",
-    label:"Congressional District", border:"#2471a3" },
+    label:"U.S. House District", border:"#2471a3" },
   { key:"state_senate", file:"Maine_Voting_Districts_2021_State_Senate.geojson",
     label:"State Senate District", border:"#6c3483" },
   { key:"state_house", file:"Maine_Voting_Districts_2021_House.geojson",
@@ -381,26 +389,23 @@ function districtAt(gj, lon, lat){
   return null;
 }
 
-// ── Lede: state the answer as a sentence ────────────────────────────────────
+// ── District readout: the three districts, spaced across one line ───────────
 function renderResult(displayName, values) {
-  const parts = LAYERS
-    .filter(c => values[c.key] != null)
-    .map(c => `<b>${esc(c.label)} ${esc(values[c.key])}</b>`);
-  let sentence;
-  if (!parts.length) {
-    sentence = "We couldn't match this address to any Maine districts.";
-  } else if (parts.length === 1) {
-    sentence = `This address is in ${parts[0]}.`;
-  } else {
-    sentence = `This address is in ${parts.slice(0,-1).join(", ")} and ${parts[parts.length-1]}.`;
-  }
+  const found = LAYERS.filter(c => values[c.key] != null);
+  const body = found.length
+    ? found.map(c =>
+        `<span class="dist-item">${esc(c.label)} <b>${esc(values[c.key])}</b></span>`).join("")
+    : `<span class="dist-item">No Maine districts matched this address.</span>`;
   document.getElementById("result_box").innerHTML = `
     <div class="lede-addr">${esc(displayName)}</div>
-    <div class="lede-districts">${sentence}</div>`;
+    <div class="dist-line">${body}</div>`;
 }
 
 function renderNotFound(address){
-  document.getElementById("result_box").innerHTML =
+  document.getElementById("results").style.display = "none";
+  const box = document.getElementById("result_box");
+  box.style.display = "block";
+  box.innerHTML =
     `<div class="errbox"><h4>Address not found</h4><p>We couldn't locate "${esc(address)}". Try adding a town and ZIP — e.g. "123 Main St, Portland, ME 04101".</p></div>`;
 }
 
@@ -415,7 +420,7 @@ function repsFor(layer, district){
 function repRow(layer, roleLabel, district, rep){
   const party = PARTY[rep.party] || { label: rep.party || "", color: "var(--text-muted)" };
   const role = district != null ? `${roleLabel} · District ${district}` : roleLabel;
-  const href = (CAMPAIGN_FINANCE_LINK[layer] || (() => null))(district, rep);
+  const href = (RESULT_LINK[layer] || (() => null))(district, rep);
   const inner = `
     <div>
       <span class="rep-name">${esc(rep.name)}</span><span class="rep-party" style="color:${party.color}">${esc(party.label)}</span>
@@ -439,12 +444,12 @@ function repGroup(layer, roleLabel, district){
 
 function renderRepresentatives(values){
   document.getElementById("rep_box").innerHTML = `
-    <div class="rep-kicker">In Washington</div>
-    ${repGroup("us_senate", "U.S. Senator · represents all of Maine", null)}
-    ${repGroup("congressional", "U.S. House", values.congressional)}
-    <div class="rep-kicker">In Augusta</div>
+    <div class="rep-kicker">State</div>
     ${repGroup("state_senate", "State Senate", values.state_senate)}
     ${repGroup("state_house", "State House", values.state_house)}
+    <div class="rep-kicker">Federal</div>
+    ${repGroup("us_senate", "U.S. Senator", null)}
+    ${repGroup("congressional", "U.S. House", values.congressional)}
   `;
 }
 
@@ -467,11 +472,16 @@ async function runLookup(){
       buildLayer(cfg, gj);
       refreshLayerStyle(cfg);
     }
+    // Reveal the readout + results now, then size the map (it was display:none
+    // until this first successful search, so Leaflet needs invalidateSize).
+    document.getElementById("result_box").style.display = "block";
+    document.getElementById("results").style.display = "flex";
+    map.invalidateSize();
+
     await showLayer(activeLayerKey);
     await repsReady;
     renderResult(geo.display_name, values);
     renderRepresentatives(values);
-    map.invalidateSize();
 
     if (marker) map.removeLayer(marker);
     marker = L.circleMarker([geo.lat, geo.lon], {

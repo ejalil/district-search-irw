@@ -280,10 +280,10 @@ const RESULT_LINK = {
 
 // Party code → display label + brand color (matches the finance pages).
 const PARTY = {
-  D: { label: "Democrat",    color: "var(--blue)" },
-  R: { label: "Republican",  color: "var(--red)" },
-  I: { label: "Independent", color: "var(--purple)" },
-  U: { label: "Unenrolled",  color: "var(--gray)" },
+  D: { label: "Democrat",    abbr: "D",  color: "var(--blue)" },
+  R: { label: "Republican",  abbr: "R",  color: "var(--red)" },
+  I: { label: "Independent", abbr: "IN", color: "var(--gray)" },
+  U: { label: "Unenrolled",  abbr: "U",  color: "var(--gray)" },
 };
 
 // ── Config: the three boundary layers ───────────────────────────────────────
@@ -431,6 +431,41 @@ function districtAt(gj, lon, lat){
   return null;
 }
 
+// Distance (km) from the address to the nearest edge of its own district in a
+// layer — how deep inside the district the point sits.
+function edgeDistanceKm(gj, districtValue, lon, lat){
+  if (districtValue == null) return Infinity;
+  const pt = turf.point([lon, lat]);
+  let min = Infinity;
+  for (const f of gj.features){
+    if (String(f.properties[DISTRICT_FIELD]) !== String(districtValue)) continue;
+    const line = turf.polygonToLine(f);            // Feature or FeatureCollection
+    const feats = line.type === "FeatureCollection" ? line.features : [line];
+    for (const lf of feats){
+      const g = lf.geometry;
+      const parts = g.type === "MultiLineString"
+        ? g.coordinates.map(c => turf.lineString(c)) : [lf];
+      for (const p of parts){
+        const d = turf.pointToLineDistance(pt, p, { units: "kilometers" });
+        if (d < min) min = d;
+      }
+    }
+  }
+  return min;
+}
+
+// Pick a zoom from how close the address is to a district boundary. Near a line,
+// the geocoded point could sit on the wrong side, so we pull back rather than
+// imply we know the exact side; well inside a district we can zoom in to orient.
+// Uses the smallest (state house) districts as the strictest test.
+function zoomForEdge(km){
+  if (!isFinite(km)) return 8.5;
+  if (km < 0.4) return 7.6;   // right on a boundary
+  if (km < 1.0) return 8.1;
+  if (km < 2.5) return 8.6;
+  return 9.2;                 // comfortably inside
+}
+
 // ── District readout: the three districts, spaced across one line ───────────
 function renderResult(displayName, values) {
   const found = LAYERS.filter(c => values[c.key] != null);
@@ -461,7 +496,7 @@ function repsFor(layer, district){
 
 function repRow(layer, roleLabel, district, rep){
   const party = PARTY[rep.party] || { label: rep.party || "Unknown", color: "var(--gray)" };
-  const letter = esc((rep.party || "?").toUpperCase().slice(0, 1));
+  const letter = esc(party.abbr || (rep.party || "?").toUpperCase().slice(0, 1));
   const role = district != null ? `${roleLabel} · District ${district}` : roleLabel;
   const href = (RESULT_LINK[layer] || (() => null))(district, rep);
   const inner = `
@@ -531,9 +566,16 @@ async function runLookup(){
       radius: 6, color: "#fff", weight: 2, fillColor: "#1a1a1a", fillOpacity: 1
     }).addTo(map);
 
-    // Ease into the region around the address — close enough to orient
-    // ("that's my corner of Maine"), not so close the district context is lost.
-    map.flyTo([geo.lat, geo.lon], 8.5, { duration: 0.9 });
+    // Ease into the region around the address. How close we zoom depends on how
+    // deep inside its districts the point sits: near a boundary we hold back so
+    // the view doesn't imply we know which side the address falls on. Test every
+    // layer and use the nearest boundary (the smallest districts dominate).
+    let edgeKm = Infinity;
+    for (const cfg of LAYERS) {
+      if (values[cfg.key] == null) continue;
+      edgeKm = Math.min(edgeKm, edgeDistanceKm(geojsonCache[cfg.file], values[cfg.key], geo.lon, geo.lat));
+    }
+    map.flyTo([geo.lat, geo.lon], zoomForEdge(edgeKm), { duration: 0.9 });
   } catch (err) {
     document.getElementById("result_box").innerHTML =
       `<div class="errbox"><h4>Something went wrong</h4><p>${esc(err.message)}</p></div>`;

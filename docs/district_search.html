@@ -24,6 +24,7 @@
     --accent: #8989f1;    /* Maine Monitor periwinkle */
     --accent-dark: #6b6bd9;
     --mm-orange: #F15A29; /* Maine Monitor orange — section rules on the finance pages */
+    --navy: #19345B;      /* Section-header ink on the finance pages */
     --text: #1a1a1a;
     --text-secondary: #4a4a4a;   /* darker grays — legible for older readers */
     --text-muted: #6e6e6e;
@@ -50,30 +51,54 @@
 
   /* ── SEARCH ── */
   /* No page header — this embeds on themainemonitor.org, which supplies its own. */
-  /* One attached bar: square corners, ink border, button flush to the field. */
+  /* A short instruction sits above the bar; the page opens as just these two. */
+  .intro { max-width: 540px; margin: 60px auto 22px; text-align: center; }
+  .search-intro {
+    font-size: 1.02rem; line-height: 1.5; color: var(--text-secondary);
+    text-wrap: balance;
+  }
+  /* One rounded pill: ink border, icon button flush to the field. */
   .search {
     display: flex; align-items: stretch;
-    margin: 40px auto 0; max-width: 620px;
+    margin: 0 auto; max-width: 620px;
   }
   #address {
-    flex: 1 1 auto; min-width: 0; min-height: 48px;
-    padding: 12px 14px; font-size: 1rem; font-family: inherit;
+    flex: 1 1 auto; min-width: 0; min-height: 52px;
+    padding: 12px 22px; font-size: 1rem; font-family: inherit;
     color: var(--text); background: #fff;
-    border: 2px solid var(--text); border-right: 0; border-radius: 0;
+    border: 2px solid var(--text); border-right: 0;
+    border-radius: 28px 0 0 28px;
     transition: background .12s;
   }
   #address::placeholder { color: var(--text-muted); }
   #address:focus { outline: 0; background: var(--bg-hover); }
   #lookup {
-    flex: 0 0 auto; min-height: 48px;
-    padding: 12px 24px; font-size: 0.92rem; font-weight: 600; font-family: inherit;
-    letter-spacing: .03em;
+    flex: 0 0 auto; width: 60px; min-height: 52px;
+    display: flex; align-items: center; justify-content: center;
     color: #fff; background: var(--text); border: 2px solid var(--text);
-    border-radius: 0; cursor: pointer; white-space: nowrap;
+    border-radius: 0 28px 28px 0; cursor: pointer;
     transition: background .12s;
   }
   #lookup:hover { background: #000; }
   #lookup:disabled { opacity: .6; cursor: default; }
+
+  /* Standing credit — matches the "Developed in partnership" line on the
+     finance pages: plain, understated, left-aligned within the column. */
+  .credit {
+    max-width: 620px; margin: 44px auto 0; padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem; line-height: 1.7; color: var(--text);
+  }
+  .credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+  #lookup .icon-search { width: 22px; height: 22px; display: block; }
+  #lookup .spinner {
+    display: none; width: 18px; height: 18px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.35); border-top-color: #fff;
+    animation: spin .6s linear infinite;
+  }
+  #lookup.is-loading .icon-search { display: none; }
+  #lookup.is-loading .spinner { display: block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ── LEDE: the answer, written as a sentence ── */
   /* Nothing but the search bar shows until a lookup succeeds. */
@@ -134,8 +159,8 @@
   /* Section header — Lora + fading rule, matching the finance pages */
   .ribbon { display: flex; align-items: baseline; gap: 14px; margin-bottom: 2px; }
   .ribbon-text {
-    font-family: 'Lora', serif; font-size: 1.45rem; font-weight: 700;
-    color: var(--text); line-height: 1.2; white-space: nowrap;
+    font-family: 'Lora', serif; font-size: 1.65rem; font-weight: 700;
+    color: var(--navy); line-height: 1.2; white-space: nowrap;
   }
   .ribbon::after {
     content: ''; flex: 1; height: 2px;
@@ -190,10 +215,20 @@
 <body>
 <div class="container">
 
+  <div class="intro">
+    <p class="search-intro">Enter your home address to see your Maine voting districts and your elected officials.</p>
+  </div>
+
   <div class="search">
     <input type="text" id="address" placeholder="e.g. 123 Main St, Portland, ME 04101"
            autocomplete="street-address" enterkeyhint="search" />
-    <button id="lookup">Search</button>
+    <button id="lookup" aria-label="Search">
+      <svg class="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/>
+      </svg>
+      <span class="spinner" aria-hidden="true"></span>
+    </button>
   </div>
 
   <div id="result_box"></div>
@@ -212,6 +247,10 @@
       <div id="rep_box"></div>
     </div>
   </div>
+
+  <footer class="credit">
+    Developed in partnership with Ela Jalil and Aarushi Sahejpal of the Investigative Reporting Workshop, a nonprofit newsroom based at American University.
+  </footer>
 
 </div>
 
@@ -463,7 +502,7 @@ async function runLookup(){
   const address = document.getElementById("address").value.trim();
   if (!address) return;
 
-  btn.disabled = true; btn.textContent = "Searching…";
+  btn.disabled = true; btn.classList.add("is-loading");
   try {
     const geo = await geocode(address);
     if (!geo) { renderNotFound(address); return; }
@@ -499,7 +538,7 @@ async function runLookup(){
     document.getElementById("result_box").innerHTML =
       `<div class="errbox"><h4>Something went wrong</h4><p>${esc(err.message)}</p></div>`;
   } finally {
-    btn.disabled = false; btn.textContent = "Search";
+    btn.disabled = false; btn.classList.remove("is-loading");
   }
 }
 

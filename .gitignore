@@ -15,3 +15,9 @@ INTERN_NOTES.html
 
 # Local reference spreadsheets (e.g. link-out lists) — baked into the code
 *.xlsx
+
+# Feedback / review docs — do not commit
+*.pdf
+*.docx
+*.doc
+*feedback*

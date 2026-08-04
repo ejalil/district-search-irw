@@ -82,14 +82,16 @@
   #lookup:hover { background: #000; }
   #lookup:disabled { opacity: .6; cursor: default; }
 
-  /* Standing credit — matches the "Developed in partnership" line on the
-     finance pages: plain, understated, left-aligned within the column. */
-  .credit {
+  /* Page footer: data-source note + partnership credit, under one thin rule.
+     Understated, matching the finance pages' footer voice. */
+  .pagefoot {
     max-width: 620px; margin: 44px auto 0; padding-top: 20px;
     border-top: 1px solid var(--border);
-    font-size: 0.8rem; line-height: 1.7; color: var(--text);
   }
-  .credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+  .sources { font-size: 0.78rem; line-height: 1.6; color: var(--text-muted); }
+  .credit { font-size: 0.8rem; line-height: 1.7; color: var(--text); }
+  .sources + .credit { margin-top: 12px; }
+  .pagefoot a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
   #lookup .icon-search { width: 22px; height: 22px; display: block; }
   #lookup .spinner {
     display: none; width: 18px; height: 18px; border-radius: 50%;
@@ -116,12 +118,10 @@
     gap: 8px 40px;
   }
   .dist-item { white-space: nowrap; font-weight: 700; color: var(--text); }
-  .errbox {
-    border-left: 3px solid var(--red); background: rgba(192,57,43,0.05);
-    padding: 14px 18px; border-radius: 3px; text-align: left;
-  }
-  .errbox h4 { color: var(--red); margin: 0 0 .25rem; font-size: 0.95rem; }
-  .errbox p { margin: 0; font-size: 0.88rem; color: var(--text-secondary); }
+  /* Not-found: quiet and plain, not an alarming red error box. */
+  .notice { max-width: 520px; margin: 0 auto; text-align: center; }
+  .notice-lead { font-size: 1.05rem; color: var(--text); }
+  .notice-hint { margin-top: 4px; font-size: 0.9rem; color: var(--text-muted); text-wrap: balance; }
 
   /* ── TWO-COLUMN: map | representatives ── */
   .page-flex {
@@ -184,14 +184,14 @@
     font-size: 1.1rem; font-weight: 700; line-height: 1.3;
   }
   a.rep-row:hover .rep-name { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+  /* Name + party badge share a flex line so the circle centers to the name. */
+  .rep-headline { display: flex; align-items: center; gap: 8px; }
   /* Party badge: a filled circle holding the party letter (D/R/I/U). */
   .rep-party {
     display: inline-flex; align-items: center; justify-content: center;
     width: 1.4rem; height: 1.4rem; border-radius: 50%;
     font-size: 0.78rem; font-weight: 700; line-height: 1;
-    color: #fff; background: var(--gray);
-    margin-left: 9px; vertical-align: middle;
-    position: relative; top: -2px; flex: 0 0 auto;
+    color: #fff; background: var(--gray); flex: 0 0 auto;
   }
   .rep-role { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
   .rep-cta {
@@ -216,11 +216,11 @@
 <div class="container">
 
   <div class="intro">
-    <p class="search-intro">Enter an address to see its Maine voting districts and elected officials.</p>
+    <p class="search-intro">Search any Maine address to see its voting districts and the officials who represent you.</p>
   </div>
 
   <div class="search">
-    <input type="text" id="address" placeholder="e.g. 123 Main St, Portland, ME 04101"
+    <input type="text" id="address" placeholder="123 Main St, Portland, ME 04101"
            autocomplete="street-address" enterkeyhint="search" />
     <button id="lookup" aria-label="Search">
       <svg class="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -248,8 +248,9 @@
     </div>
   </div>
 
-  <footer class="credit">
-    Developed in partnership with Ela Jalil and Aarushi Sahejpal of the Investigative Reporting Workshop, a nonprofit newsroom based at American University.
+  <footer class="pagefoot">
+    <p class="sources">District boundaries are Maine’s 2021 voting districts, published by Maine GeoLibrary from the redistricting that followed the 2020 Census: <a href="https://maine.hub.arcgis.com/datasets/0e4a31b61b714ba08a3e9b3c2b752d77_3" target="_blank" rel="noopener">U.S. House</a>, <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-senate" target="_blank" rel="noopener">State Senate</a> and <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-house" target="_blank" rel="noopener">State House</a>. Addresses are located using OpenStreetMap.</p>
+    <p class="credit">Developed in partnership with Ela Jalil and Aarushi Sahejpal of the Investigative Reporting Workshop, a nonprofit newsroom based at American University.</p>
   </footer>
 
 </div>
@@ -269,11 +270,11 @@ const RESULT_ACTION_LABEL = "Voter guide →";
 // Version B swaps these for the state-house district pages:
 //   state_senate → MM + "maine-state-senate-district-" + d + "/"
 //   state_house  → MM + "maine-state-house-district-"  + d + "/"
-// Federal (U.S. Senate / U.S. House) pages come later.
 const MM = "https://themainemonitor.org/";
 const RESULT_LINK = {
-  us_senate:     (d, r) => null,                                       // federal — later
-  congressional: (d, r) => null,                                       // federal — later
+  us_senate:     (d, r) => MM + "us-senate-elections/",                 // statewide race
+  congressional: (d, r) => d === "1" ? MM + "1st-congressional-elections/"
+                         : d === "2" ? MM + "2nd-congressional-elections/" : null,
   state_senate:  (d, r) => MM + "senate-district-" + d + "-elections/",
   state_house:   (d, r) => MM + "house-district-"  + d + "-elections/",
 };
@@ -282,7 +283,7 @@ const RESULT_LINK = {
 const PARTY = {
   D: { label: "Democrat",    abbr: "D",  color: "var(--blue)" },
   R: { label: "Republican",  abbr: "R",  color: "var(--red)" },
-  I: { label: "Independent", abbr: "IN", color: "var(--gray)" },
+  I: { label: "Independent", abbr: "I",  color: "var(--gray)" },
   U: { label: "Unenrolled",  abbr: "U",  color: "var(--gray)" },
 };
 
@@ -297,8 +298,8 @@ const LAYERS = [
     label:"State House District", border:"#a04000" },
 ];
 
-const HIGHLIGHT_FILL = "#8989f1";      // brand periwinkle
-const HIGHLIGHT_BORDER = "#5b5bd6";
+const HIGHLIGHT_FILL = "#F15A29";      // Maine Monitor orange — neutral, non-partisan
+const HIGHLIGHT_BORDER = "#c0451f";
 const DEFAULT_FILL = "#d9d9d9";
 
 // ── Map setup (CartoDB Positron) ─────────────────────────────────────────────
@@ -404,7 +405,22 @@ document.querySelectorAll("#map_tabs button[data-layer]").forEach(b =>
   b.addEventListener("click", () => showLayer(b.dataset.layer)));
 
 // ── Geocode (Nominatim) ──────────────────────────────────────────────────────
+// Apartment / unit designators trip up Nominatim (which geocodes to the street,
+// not the unit), so strip them. Handles "Apt 3", "Apt. 3", "Apartment 3",
+// "Unit 5", "Unit #5", "Ste 2", "Suite 2", and a bare "#4B" — common in autofill.
+function stripUnit(s){
+  return s
+    .replace(/,?\s*(?:apt\.?|apartment|unit|ste\.?|suite)\s*#?\s*[\w-]+/gi, "")
+    .replace(/,?\s*#\s*[\w-]+/g, "")
+    .replace(/\s+,/g, ",").replace(/,\s*,/g, ",").replace(/\s{2,}/g, " ").trim();
+}
+
+// Rough test: did the user already give a town or ZIP? Used to tailor the
+// not-found message — "add a town and ZIP" only helps if they left one off.
+function hasTownOrZip(s){ return /\d{5}/.test(s) || /,\s*[A-Za-z]/.test(s); }
+
 async function geocode(address){
+  address = stripUnit(address);
   if (!/maine|,\s*me\b/i.test(address)) address = address + ", Maine";
   const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&addressdetails=1&q="
             + encodeURIComponent(address);
@@ -482,8 +498,16 @@ function renderNotFound(address){
   document.getElementById("results").style.display = "none";
   const box = document.getElementById("result_box");
   box.style.display = "block";
+  // Only nudge for a town/ZIP if they actually left one off; otherwise the
+  // address just isn't on the map yet (or has a typo).
+  const hint = hasTownOrZip(address)
+    ? "Double-check the spelling, or try a nearby address — the street may be too new to appear yet."
+    : "Add a town and ZIP code, then search again.";
   box.innerHTML =
-    `<div class="errbox"><h4>Address not found</h4><p>We couldn't locate "${esc(address)}". Try adding a town and ZIP — e.g. "123 Main St, Portland, ME 04101".</p></div>`;
+    `<div class="notice">
+       <p class="notice-lead">We couldn’t find that address.</p>
+       <p class="notice-hint">${hint}</p>
+     </div>`;
 }
 
 // ── Representatives: ruled list rows ────────────────────────────────────────
@@ -501,7 +525,7 @@ function repRow(layer, roleLabel, district, rep){
   const href = (RESULT_LINK[layer] || (() => null))(district, rep);
   const inner = `
     <div>
-      <span class="rep-name">${esc(rep.name)}</span><span class="rep-party" style="background:${party.color}" title="${esc(party.label)}" aria-label="${esc(party.label)}">${letter}</span>
+      <div class="rep-headline"><span class="rep-name">${esc(rep.name)}</span><span class="rep-party" style="background:${party.color}" title="${esc(party.label)}" aria-label="${esc(party.label)}">${letter}</span></div>
       <div class="rep-role">${esc(role)}</div>
     </div>`;
   if (href) {
@@ -578,7 +602,7 @@ async function runLookup(){
     map.flyTo([geo.lat, geo.lon], zoomForEdge(edgeKm), { duration: 0.9 });
   } catch (err) {
     document.getElementById("result_box").innerHTML =
-      `<div class="errbox"><h4>Something went wrong</h4><p>${esc(err.message)}</p></div>`;
+      `<div class="notice"><p class="notice-lead">Something went wrong.</p><p class="notice-hint">${esc(err.message)}</p></div>`;
   } finally {
     btn.disabled = false; btn.classList.remove("is-loading");
   }

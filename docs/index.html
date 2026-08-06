@@ -380,7 +380,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c =>
 function styleFor(cfg, districtValue, highlightValue) {
   const isHighlighted = highlightValue != null && String(districtValue) === String(highlightValue);
   if (isHighlighted) {
-    return { fillColor: HIGHLIGHT_FILL, fillOpacity: 0.45, color: HIGHLIGHT_BORDER, weight: 3 };
+    return { fillColor: HIGHLIGHT_FILL, fillOpacity: 0.62, color: HIGHLIGHT_BORDER, weight: 3 };
   }
   return { fillColor: DEFAULT_FILL, fillOpacity: 0.25, color: cfg.border, weight: 1 };
 }

@@ -420,7 +420,7 @@ async function showLayer(key){
   if (marker) marker.bringToFront();
 }
 document.querySelectorAll("#map_tabs button[data-layer]").forEach(b =>
-  b.addEventListener("click", () => showLayer(b.dataset.layer)));
+  b.addEventListener("click", () => showLayer(b.dataset.layer).then(frameActiveDistrict)));
 
 // ── Geocode (Nominatim) ──────────────────────────────────────────────────────
 // Apartment / unit designators trip up Nominatim (which geocodes to the street,
@@ -465,39 +465,29 @@ function districtAt(gj, lon, lat){
   return null;
 }
 
-// Distance (km) from the address to the nearest edge of its own district in a
-// layer — how deep inside the district the point sits.
-function edgeDistanceKm(gj, districtValue, lon, lat){
-  if (districtValue == null) return Infinity;
-  const pt = turf.point([lon, lat]);
-  let min = Infinity;
-  for (const f of gj.features){
-    if (String(f.properties[DISTRICT_FIELD]) !== String(districtValue)) continue;
-    const line = turf.polygonToLine(f);            // Feature or FeatureCollection
-    const feats = line.type === "FeatureCollection" ? line.features : [line];
-    for (const lf of feats){
-      const g = lf.geometry;
-      const parts = g.type === "MultiLineString"
-        ? g.coordinates.map(c => turf.lineString(c)) : [lf];
-      for (const p of parts){
-        const d = turf.pointToLineDistance(pt, p, { units: "kilometers" });
-        if (d < min) min = d;
-      }
-    }
-  }
-  return min;
+// Bounds of the matched district (of the given layer) so we can frame it.
+function districtBounds(gj, districtValue){
+  if (districtValue == null) return null;
+  const feats = gj.features.filter(f =>
+    String(f.properties[DISTRICT_FIELD]) === String(districtValue));
+  if (!feats.length) return null;
+  return L.geoJSON({ type: "FeatureCollection", features: feats }).getBounds();
 }
 
-// Pick a zoom from how close the address is to a district boundary. Near a line,
-// the geocoded point could sit on the wrong side, so we pull back rather than
-// imply we know the exact side; well inside a district we can zoom in to orient.
-// Uses the smallest (state house) districts as the strictest test.
-function zoomForEdge(km){
-  if (!isFinite(km)) return 8.5;
-  if (km < 0.4) return 7.6;   // right on a boundary
-  if (km < 1.0) return 8.1;
-  if (km < 2.5) return 8.6;
-  return 9.2;                 // comfortably inside
+// Frame the active tab's matched district: fitBounds so a small district fills
+// the view (visible) and a large one sits at a lower zoom (not over-zoomed).
+// maxZoom caps how far we go so a tiny district doesn't imply street precision.
+function frameActiveDistrict(reveal){
+  const cfg = LAYERS.find(l => l.key === activeLayerKey);
+  const gj = cfg && geojsonCache[cfg.file];
+  const b = gj && districtBounds(gj, highlighted[activeLayerKey]);
+  if (!(b && b.isValid())) return;
+  if (reveal && maineBounds) {
+    map.fitBounds(maineBounds, { animate: false });                        // start wide: all of Maine
+    map.flyToBounds(b, { padding: [30, 30], maxZoom: 13, duration: 1.3 }); // then glide into the district
+  } else {
+    map.fitBounds(b, { padding: [30, 30], maxZoom: 13, animate: true, duration: 0.8 });
+  }
 }
 
 // ── District readout: the three districts, spaced across one line ───────────
@@ -610,16 +600,8 @@ async function runLookup(preGeo){
       radius: 6, color: "#fff", weight: 2, fillColor: "#1a1a1a", fillOpacity: 1
     }).addTo(map);
 
-    // Ease into the region around the address. How close we zoom depends on how
-    // deep inside its districts the point sits: near a boundary we hold back so
-    // the view doesn't imply we know which side the address falls on. Test every
-    // layer and use the nearest boundary (the smallest districts dominate).
-    let edgeKm = Infinity;
-    for (const cfg of LAYERS) {
-      if (values[cfg.key] == null) continue;
-      edgeKm = Math.min(edgeKm, edgeDistanceKm(geojsonCache[cfg.file], values[cfg.key], geo.lon, geo.lat));
-    }
-    map.flyTo([geo.lat, geo.lon], zoomForEdge(edgeKm), { duration: 0.9 });
+    // Reveal: start on all of Maine, then glide into the active tab's district.
+    frameActiveDistrict(true);
   } catch (err) {
     document.getElementById("result_box").innerHTML =
       `<div class="notice"><p class="notice-lead">Something went wrong.</p><p class="notice-hint">${esc(err.message)}</p></div>`;

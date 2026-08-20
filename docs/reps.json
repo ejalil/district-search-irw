@@ -4,59 +4,99 @@
       {
         "name": "Chellie Pingree",
         "party": "D"
+      },
+      {
+        "name": "Ronald Russell",
+        "party": "R"
       }
     ],
     "2": [
       {
-        "name": "Jared Golden",
+        "name": "Matt Dunlap",
         "party": "D"
+      },
+      {
+        "name": "Paul LePage",
+        "party": "R"
       }
     ]
   },
   "state_senate": {
     "1": [
       {
-        "name": "Susan Bernard",
+        "name": "Lucien Daigle",
         "party": "R"
+      },
+      {
+        "name": "Vaughn McLaughlin",
+        "party": "D"
       }
     ],
     "2": [
       {
-        "name": "Harold \"Trey\" L. Stewart, III",
+        "name": "Harold Stewart III",
         "party": "R"
+      },
+      {
+        "name": "Janel Underwood-Charette",
+        "party": "D"
       }
     ],
     "3": [
       {
-        "name": "Bradlee T. Farrin",
+        "name": "Ester Franklin",
+        "party": "D"
+      },
+      {
+        "name": "Joel Stetkis",
         "party": "R"
       }
     ],
     "4": [
       {
-        "name": "Stacey K. Guerin",
+        "name": "Chad Perkins",
         "party": "R"
+      },
+      {
+        "name": "Lisa Kalp",
+        "party": "D"
       }
     ],
     "5": [
       {
-        "name": "Russell J. Black",
+        "name": "Elizabeth Caruso",
         "party": "R"
+      },
+      {
+        "name": "Robert Sullebarger",
+        "party": "D"
       }
     ],
     "6": [
       {
-        "name": "Marianne Moore",
+        "name": "Aaron Dana",
+        "party": "I"
+      },
+      {
+        "name": "Billy Bob Faulkingham",
         "party": "R"
       }
     ],
     "7": [
       {
-        "name": "Nicole C. Grohoski",
+        "name": "Cheryl Hewes",
+        "party": "R"
+      },
+      {
+        "name": "Nicole Grohoski",
         "party": "D"
       }
     ],
     "8": [
+      {
+        "name": "Leo Kenney",
+        "party": "R"
+      },
       {
         "name": "Michael Tipping",
         "party": "D"
@@ -64,91 +104,155 @@
     ],
     "9": [
       {
-        "name": "Joseph M. Baldacci",
+        "name": "Amy Roeder",
         "party": "D"
+      },
+      {
+        "name": "Stephen Carey",
+        "party": "I"
       }
     ],
     "10": [
       {
-        "name": "David G. Haggan",
+        "name": "David Haggan",
         "party": "R"
+      },
+      {
+        "name": "Jaric T. Fontaine",
+        "party": "D"
       }
     ],
     "11": [
       {
-        "name": "Glenn \"Chip\" Curry",
+        "name": "Glenn Curry",
         "party": "D"
+      },
+      {
+        "name": "Ryan Otis",
+        "party": "R"
       }
     ],
     "12": [
       {
-        "name": "Pinny H. Beebe-Center",
+        "name": "Ann Matlack",
         "party": "D"
+      },
+      {
+        "name": "Nicole Kalloch",
+        "party": "I"
       }
     ],
     "13": [
       {
-        "name": "Cameron D. Reny",
+        "name": "Cameron Reny",
         "party": "D"
+      },
+      {
+        "name": "Edwin Mitchell",
+        "party": "I"
       }
     ],
     "14": [
       {
-        "name": "Craig V. Hickman",
+        "name": "Craig Hickman",
         "party": "D"
+      },
+      {
+        "name": "Steven McGee",
+        "party": "R"
       }
     ],
     "15": [
       {
-        "name": "Richard T. Bradstreet",
+        "name": "Amanda Heath",
+        "party": "D"
+      },
+      {
+        "name": "Kati McCormick",
         "party": "R"
       }
     ],
     "16": [
       {
-        "name": "Scott W. Cyrway",
+        "name": "Patric Moore",
+        "party": "D"
+      },
+      {
+        "name": "Scott Cyrway",
         "party": "R"
       }
     ],
     "17": [
       {
-        "name": "Jeffrey L. Timberlake",
+        "name": "Jo-Jean Keller",
+        "party": "D"
+      },
+      {
+        "name": "Richard Mason",
         "party": "R"
       }
     ],
     "18": [
       {
-        "name": "Richard A. Bennett",
-        "party": "U"
+        "name": "Elizabeth Bosworth",
+        "party": "D"
+      },
+      {
+        "name": "John Andrews",
+        "party": "R"
       }
     ],
     "19": [
       {
-        "name": "Joseph E. Martin",
+        "name": "David Duguay",
+        "party": "I"
+      },
+      {
+        "name": "Joseph Martin",
         "party": "R"
+      },
+      {
+        "name": "Peter Southam",
+        "party": "D"
       }
     ],
     "20": [
       {
         "name": "Bruce Bickford",
         "party": "R"
+      },
+      {
+        "name": "Michael Scott",
+        "party": "D"
       }
     ],
     "21": [
       {
-        "name": "Margaret \"Peggy\" R. Rotundo",
+        "name": "Eryn Soule",
+        "party": "I"
+      },
+      {
+        "name": "Shanna Cox",
         "party": "D"
       }
     ],
     "22": [
       {
-        "name": "James D. Libby",
+        "name": "Kimberly Pomerleau",
         "party": "R"
+      },
+      {
+        "name": "Nathan Burnett",
+        "party": "D"
       }
     ],
     "23": [
       {
-        "name": "Matthea E.L. Daughtry",
+        "name": "Bernard Porter",
+        "party": "R"
+      },
+      {
+        "name": "Matthea Daughtry",
         "party": "D"
       }
     ],
@@ -160,19 +264,23 @@
     ],
     "25": [
       {
-        "name": "Teresa S. Pierce",
+        "name": "Teresa Pierce",
         "party": "D"
       }
     ],
     "26": [
       {
-        "name": "Timothy E. Nangle",
+        "name": "Kenneth Cianchette",
+        "party": "R"
+      },
+      {
+        "name": "Timothy Nangle",
         "party": "D"
       }
     ],
     "27": [
       {
-        "name": "Jill C. Duson",
+        "name": "Jill Duson",
         "party": "D"
       }
     ],
@@ -184,13 +292,21 @@
     ],
     "29": [
       {
-        "name": "Anne M. Carney",
+        "name": "Anne Carney",
         "party": "D"
+      },
+      {
+        "name": "Vincent Maietta",
+        "party": "R"
       }
     ],
     "30": [
       {
-        "name": "Stacy F. Brenner",
+        "name": "Thad Moody",
+        "party": "R"
+      },
+      {
+        "name": "Sophia Warren",
         "party": "D"
       }
     ],
@@ -198,29 +314,49 @@
       {
         "name": "Donna Bailey",
         "party": "D"
+      },
+      {
+        "name": "Scott Eccleston",
+        "party": "R"
       }
     ],
     "32": [
       {
-        "name": "Henry L. Ingwersen",
+        "name": "Henry Ingwersen",
         "party": "D"
+      },
+      {
+        "name": "Jason Litalien",
+        "party": "I"
       }
     ],
     "33": [
       {
-        "name": "Matthew A. Harrington",
+        "name": "Mark Vigliotta",
+        "party": "D"
+      },
+      {
+        "name": "Matthew Harrington",
         "party": "R"
       }
     ],
     "34": [
       {
-        "name": "Joseph E. Rafferty",
+        "name": "Daniel Sayre",
         "party": "D"
+      },
+      {
+        "name": "Jonathan Fallon",
+        "party": "R"
       }
     ],
     "35": [
       {
-        "name": "Mark W. Lawrence",
+        "name": "Julie Rakic",
+        "party": "R"
+      },
+      {
+        "name": "Michele Meyer",
         "party": "D"
       }
     ]
@@ -228,19 +364,957 @@
   "state_house": {
     "1": [
       {
-        "name": "Lucien Daigle",
+        "name": "Austin Theriault",
+        "party": "R"
+      },
+      {
+        "name": "Jennifer Levesque",
+        "party": "D"
+      }
+    ],
+    "2": [
+      {
+        "name": "Roger Albert",
+        "party": "R"
+      },
+      {
+        "name": "Roland Martin",
+        "party": "D"
+      }
+    ],
+    "3": [
+      {
+        "name": "David McCrea",
+        "party": "D"
+      },
+      {
+        "name": "Susan Bernard",
         "party": "R"
       }
     ],
+    "4": [
+      {
+        "name": "Timothy Guerrette",
+        "party": "R"
+      }
+    ],
+    "5": [
+      {
+        "name": "Douglas Carlisle Jr.",
+        "party": "R"
+      },
+      {
+        "name": "Lori Kenneson",
+        "party": "D"
+      }
+    ],
+    "6": [
+      {
+        "name": "Donald Ardell",
+        "party": "R"
+      },
+      {
+        "name": "Melanie Tompkins",
+        "party": "D"
+      }
+    ],
+    "7": [
+      {
+        "name": "Jantzen Craine",
+        "party": "R"
+      },
+      {
+        "name": "Matthew Rush",
+        "party": "D"
+      }
+    ],
+    "8": [
+      {
+        "name": "Tracy Quint",
+        "party": "R"
+      }
+    ],
+    "9": [
+      {
+        "name": "Arthur Mingo",
+        "party": "R"
+      },
+      {
+        "name": "Nicole Richards",
+        "party": "D"
+      }
+    ],
     "10": [
+      {
+        "name": "Genevieve Lemire",
+        "party": "D"
+      },
       {
         "name": "William Tuell",
         "party": "R"
       }
     ],
+    "11": [
+      {
+        "name": "Keith Newman",
+        "party": "D"
+      },
+      {
+        "name": "Tiffany Strout",
+        "party": "R"
+      }
+    ],
+    "12": [
+      {
+        "name": "Roy Gott",
+        "party": "I"
+      },
+      {
+        "name": "Thomas Hart",
+        "party": "R"
+      }
+    ],
+    "13": [
+      {
+        "name": "Michael Cunningham II",
+        "party": "D"
+      },
+      {
+        "name": "Russell White",
+        "party": "R"
+      }
+    ],
+    "14": [
+      {
+        "name": "Gary Friedmann",
+        "party": "D"
+      }
+    ],
+    "15": [
+      {
+        "name": "Holly Eaton",
+        "party": "D"
+      },
+      {
+        "name": "Clifford Noyes",
+        "party": "I"
+      }
+    ],
+    "16": [
+      {
+        "name": "Eric White",
+        "party": "R"
+      },
+      {
+        "name": "Nina Milliken",
+        "party": "D"
+      }
+    ],
+    "17": [
+      {
+        "name": "Ronald Russell",
+        "party": "D"
+      },
+      {
+        "name": "Steven Bishop",
+        "party": "R"
+      }
+    ],
+    "18": [
+      {
+        "name": "Jonathan Goble",
+        "party": "D"
+      },
+      {
+        "name": "Mathew Mcintyre",
+        "party": "R"
+      }
+    ],
+    "19": [
+      {
+        "name": "David Ulrich",
+        "party": "D"
+      },
+      {
+        "name": "Richard Campbell",
+        "party": "R"
+      }
+    ],
+    "20": [
+      {
+        "name": "Dani O'Halloran",
+        "party": "D"
+      },
+      {
+        "name": "Patrick Jude",
+        "party": "R"
+      }
+    ],
+    "21": [
+      {
+        "name": "Ambureen Rana",
+        "party": "D"
+      },
+      {
+        "name": "Frank Casella",
+        "party": "R"
+      }
+    ],
+    "22": [
+      {
+        "name": "Laura Supica",
+        "party": "D"
+      }
+    ],
+    "23": [
+      {
+        "name": "Brian Ames",
+        "party": "R"
+      },
+      {
+        "name": "Victoria Kornfield",
+        "party": "D"
+      }
+    ],
+    "24": [
+      {
+        "name": "Sean Faircloth",
+        "party": "D"
+      }
+    ],
+    "25": [
+      {
+        "name": "Anthony Weaver",
+        "party": "R"
+      },
+      {
+        "name": "Laurie Osher",
+        "party": "D"
+      }
+    ],
+    "26": [
+      {
+        "name": "Adam Shaw",
+        "party": "I"
+      },
+      {
+        "name": "James Dill",
+        "party": "D"
+      }
+    ],
+    "27": [
+      {
+        "name": "David Giles",
+        "party": "R"
+      },
+      {
+        "name": "Devan Arnold",
+        "party": "D"
+      }
+    ],
+    "28": [
+      {
+        "name": "Gordon Street",
+        "party": "D"
+      },
+      {
+        "name": "Irene Gifford",
+        "party": "R"
+      }
+    ],
+    "29": [
+      {
+        "name": "Nancy Theriault",
+        "party": "R"
+      },
+      {
+        "name": "Nancy McDowell",
+        "party": "D"
+      }
+    ],
+    "30": [
+      {
+        "name": "James White",
+        "party": "R"
+      },
+      {
+        "name": "John Contreni Jr.",
+        "party": "D"
+      }
+    ],
+    "31": [
+      {
+        "name": "Andrew Torbett",
+        "party": "R"
+      },
+      {
+        "name": "Eric Boothroyd",
+        "party": "D"
+      }
+    ],
+    "32": [
+      {
+        "name": "Shawn Lancaster",
+        "party": "R"
+      }
+    ],
+    "33": [
+      {
+        "name": "Kenneth Fredette",
+        "party": "R"
+      },
+      {
+        "name": "Michael Brayson",
+        "party": "D"
+      }
+    ],
+    "34": [
+      {
+        "name": "James McClymer",
+        "party": "D"
+      },
+      {
+        "name": "Stacey Guerin",
+        "party": "R"
+      }
+    ],
+    "35": [
+      {
+        "name": "Debora Farnham",
+        "party": "D"
+      },
+      {
+        "name": "James Thorne",
+        "party": "R"
+      }
+    ],
+    "36": [
+      {
+        "name": "Clifton Foster III",
+        "party": "D"
+      },
+      {
+        "name": "Kimberly Haggan",
+        "party": "R"
+      }
+    ],
+    "37": [
+      {
+        "name": "Alan Orcutt",
+        "party": "D"
+      },
+      {
+        "name": "Reagan Paul",
+        "party": "R"
+      }
+    ],
+    "38": [
+      {
+        "name": "Benjamin Hymes",
+        "party": "R"
+      },
+      {
+        "name": "Kayla Miller",
+        "party": "D"
+      }
+    ],
+    "39": [
+      {
+        "name": "Madison Cook",
+        "party": "D"
+      },
+      {
+        "name": "Michael Nicholson",
+        "party": "R"
+      }
+    ],
+    "40": [
+      {
+        "name": "Michael Ray",
+        "party": "D"
+      },
+      {
+        "name": "Joseph McLaughlin",
+        "party": "R"
+      }
+    ],
+    "41": [
+      {
+        "name": "Cory Raymond",
+        "party": "R"
+      },
+      {
+        "name": "Joshua Gerritsen",
+        "party": "D"
+      }
+    ],
+    "42": [
+      {
+        "name": "Melissa Byer",
+        "party": "R"
+      },
+      {
+        "name": "Valli Geiger",
+        "party": "D"
+      }
+    ],
+    "43": [
+      {
+        "name": "Christopher Austin",
+        "party": "R"
+      },
+      {
+        "name": "Rhiannon Hampson",
+        "party": "D"
+      }
+    ],
+    "44": [
+      {
+        "name": "Ray Thombs",
+        "party": "R"
+      },
+      {
+        "name": "Shawn Saindon",
+        "party": "I"
+      }
+    ],
+    "45": [
+      {
+        "name": "Clinton Collamore",
+        "party": "I"
+      },
+      {
+        "name": "Rebecca Stephens",
+        "party": "R"
+      }
+    ],
+    "46": [
+      {
+        "name": "Jennifer Mayher",
+        "party": "D"
+      },
+      {
+        "name": "Kristine Poland",
+        "party": "I"
+      }
+    ],
+    "47": [
+      {
+        "name": "Chester Grover III",
+        "party": "R"
+      },
+      {
+        "name": "Wayne Farrin",
+        "party": "D"
+      }
+    ],
+    "48": [
+      {
+        "name": "Charlotte Nutt",
+        "party": "D"
+      },
+      {
+        "name": "Erik Hobson",
+        "party": "R"
+      }
+    ],
+    "49": [
+      {
+        "name": "Suzanne Andresen",
+        "party": "R"
+      },
+      {
+        "name": "Trent Vellella",
+        "party": "D"
+      }
+    ],
+    "50": [
+      {
+        "name": "David Sinclair",
+        "party": "D"
+      },
+      {
+        "name": "Jedediah Rice II",
+        "party": "R"
+      }
+    ],
+    "51": [
+      {
+        "name": "Annalyse Sarvinas",
+        "party": "R"
+      },
+      {
+        "name": "Rafael Macias",
+        "party": "D"
+      }
+    ],
+    "52": [
+      {
+        "name": "David Guilmette",
+        "party": "R"
+      },
+      {
+        "name": "Sally Cluchey",
+        "party": "D"
+      }
+    ],
+    "53": [
+      {
+        "name": "Michael Lemelin",
+        "party": "R"
+      },
+      {
+        "name": "Richard Goldman",
+        "party": "D"
+      }
+    ],
+    "54": [
+      {
+        "name": "Karen Montell",
+        "party": "D"
+      },
+      {
+        "name": "Michelle Tucker",
+        "party": "R"
+      }
+    ],
+    "55": [
+      {
+        "name": "Charles Hippler IV",
+        "party": "R"
+      },
+      {
+        "name": "Maureen AuCoin",
+        "party": "D"
+      }
+    ],
+    "56": [
+      {
+        "name": "Randall Greenwood",
+        "party": "R"
+      },
+      {
+        "name": "Robin Upton-Sukeforth",
+        "party": "D"
+      }
+    ],
+    "57": [
+      {
+        "name": "David Potvin",
+        "party": "R"
+      },
+      {
+        "name": "Tavis Hasenfus",
+        "party": "D"
+      }
+    ],
+    "58": [
+      {
+        "name": "Dexter Bridges",
+        "party": "R"
+      },
+      {
+        "name": "Sharon Frost",
+        "party": "I"
+      }
+    ],
+    "59": [
+      {
+        "name": "John Reny",
+        "party": "R"
+      },
+      {
+        "name": "Katrina Couch Ray-Saulis",
+        "party": "D"
+      }
+    ],
+    "60": [
+      {
+        "name": "William Bridgeo",
+        "party": "D"
+      },
+      {
+        "name": "Wyatt Beaulieu",
+        "party": "R"
+      }
+    ],
+    "61": [
+      {
+        "name": "Alicia Collins",
+        "party": "R"
+      },
+      {
+        "name": "Robin Crawley",
+        "party": "D"
+      }
+    ],
+    "62": [
+      {
+        "name": "Katrina Smith",
+        "party": "R"
+      },
+      {
+        "name": "Pamela Swift",
+        "party": "D"
+      }
+    ],
+    "63": [
+      {
+        "name": "Paul Flynn",
+        "party": "R"
+      },
+      {
+        "name": "Taylor West",
+        "party": "D"
+      }
+    ],
+    "64": [
+      {
+        "name": "Flavia DeBrito",
+        "party": "D"
+      },
+      {
+        "name": "Shawn Packard",
+        "party": "R"
+      }
+    ],
+    "65": [
+      {
+        "name": "Cassie Julia",
+        "party": "D"
+      },
+      {
+        "name": "Jeremy McArthur",
+        "party": "R"
+      }
+    ],
+    "66": [
+      {
+        "name": "Michael Perkins",
+        "party": "R"
+      }
+    ],
+    "67": [
+      {
+        "name": "Matthew Townsend",
+        "party": "D"
+      },
+      {
+        "name": "Shawn Dixon",
+        "party": "R"
+      }
+    ],
+    "68": [
+      {
+        "name": "Amanda Collamore",
+        "party": "R"
+      },
+      {
+        "name": "Zachary Lejonhud",
+        "party": "I"
+      }
+    ],
+    "69": [
+      {
+        "name": "Dean Cray",
+        "party": "R"
+      },
+      {
+        "name": "Jessica Blanchard",
+        "party": "D"
+      }
+    ],
+    "70": [
+      {
+        "name": "Jennifer Poirier",
+        "party": "R"
+      },
+      {
+        "name": "Joseph Almand",
+        "party": "D"
+      }
+    ],
+    "71": [
+      {
+        "name": "John Ducharme III",
+        "party": "R"
+      }
+    ],
+    "72": [
+      {
+        "name": "Cynthia Soma-Hernandez",
+        "party": "D"
+      },
+      {
+        "name": "Douglas Thomas",
+        "party": "R"
+      }
+    ],
+    "73": [
+      {
+        "name": "Daniel Simonds",
+        "party": "D"
+      },
+      {
+        "name": "Michael Soboleski",
+        "party": "R"
+      }
+    ],
+    "74": [
+      {
+        "name": "Marc Edwards",
+        "party": "D"
+      },
+      {
+        "name": "Russell Black",
+        "party": "R"
+      }
+    ],
+    "75": [
+      {
+        "name": "Scott Landry",
+        "party": "D"
+      },
+      {
+        "name": "Randall Gauvin",
+        "party": "R"
+      }
+    ],
+    "76": [
+      {
+        "name": "Sheila A. Lyman",
+        "party": "R"
+      },
+      {
+        "name": "Trevor Doiron",
+        "party": "D"
+      }
+    ],
+    "77": [
+      {
+        "name": "Arlie Hetrick Jr.",
+        "party": "D"
+      },
+      {
+        "name": "Tammy Schmersal-Burgess",
+        "party": "R"
+      }
+    ],
+    "78": [
+      {
+        "name": "Rachel Henderson",
+        "party": "R"
+      },
+      {
+        "name": "Woodleigh Hughes",
+        "party": "D"
+      }
+    ],
+    "79": [
+      {
+        "name": "Brianna Lueck",
+        "party": "D"
+      },
+      {
+        "name": "Michael Lance",
+        "party": "R"
+      }
+    ],
+    "80": [
+      {
+        "name": "Azalea Cormier",
+        "party": "I"
+      },
+      {
+        "name": "Ernest Fitts IV",
+        "party": "R"
+      }
+    ],
+    "81": [
+      {
+        "name": "Christopher Easton",
+        "party": "D"
+      },
+      {
+        "name": "Peter Wood",
+        "party": "R"
+      }
+    ],
+    "82": [
+      {
+        "name": "Caleb Ness",
+        "party": "R"
+      },
+      {
+        "name": "Christopher Lewey",
+        "party": "D"
+      }
+    ],
+    "83": [
+      {
+        "name": "Marygrace Cimino",
+        "party": "R"
+      },
+      {
+        "name": "Timothy Becker",
+        "party": "D"
+      }
+    ],
+    "84": [
+      {
+        "name": "Cassandra Dove",
+        "party": "D"
+      },
+      {
+        "name": "Mark Walker",
+        "party": "R"
+      }
+    ],
+    "85": [
+      {
+        "name": "Adrienne Paul",
+        "party": "R"
+      },
+      {
+        "name": "Paul Welch",
+        "party": "D"
+      }
+    ],
+    "86": [
+      {
+        "name": "Abigail Geer",
+        "party": "D"
+      },
+      {
+        "name": "Rolf Olsen Jr.",
+        "party": "R"
+      }
+    ],
+    "87": [
+      {
+        "name": "David Boyer Jr.",
+        "party": "R"
+      }
+    ],
+    "88": [
+      {
+        "name": "Dana Staples",
+        "party": "D"
+      },
+      {
+        "name": "Quentin Chapman",
+        "party": "R"
+      }
+    ],
+    "89": [
+      {
+        "name": "Adam Lee",
+        "party": "D"
+      },
+      {
+        "name": "James Berube",
+        "party": "R"
+      }
+    ],
+    "90": [
+      {
+        "name": "James Sorcek",
+        "party": "R"
+      },
+      {
+        "name": "Pamela Hart",
+        "party": "D"
+      }
+    ],
+    "91": [
+      {
+        "name": "Jeffrey Timberlake",
+        "party": "R"
+      }
+    ],
+    "92": [
+      {
+        "name": "Scott Girardin",
+        "party": "I"
+      },
+      {
+        "name": "Stephen Wood",
+        "party": "R"
+      }
+    ],
+    "93": [
+      {
+        "name": "Julia McCabe",
+        "party": "D"
+      },
+      {
+        "name": "Susan Longchamps",
+        "party": "R"
+      }
+    ],
+    "94": [
+      {
+        "name": "Janet Beaudoin",
+        "party": "R"
+      },
+      {
+        "name": "Scott Harriman",
+        "party": "D"
+      }
+    ],
+    "95": [
+      {
+        "name": "Bret Martel",
+        "party": "R"
+      },
+      {
+        "name": "Kiernan Majerus-Collins",
+        "party": "D"
+      }
+    ],
+    "96": [
+      {
+        "name": "Kerryl Clement",
+        "party": "R"
+      },
+      {
+        "name": "Luke Jensen",
+        "party": "D"
+      }
+    ],
+    "97": [
+      {
+        "name": "Dale Crafts",
+        "party": "R"
+      }
+    ],
+    "98": [
+      {
+        "name": "Kilton Webb",
+        "party": "D"
+      },
+      {
+        "name": "William St. Michel",
+        "party": "R"
+      }
+    ],
+    "99": [
+      {
+        "name": "Braeden Webber",
+        "party": "R"
+      },
+      {
+        "name": "Cheryl Golek",
+        "party": "D"
+      }
+    ],
     "100": [
       {
-        "name": "Daniel Ankeles",
+        "name": "Brett Barrett",
+        "party": "R"
+      },
+      {
+        "name": "Daniel  Ankeles",
         "party": "D"
       }
     ],
@@ -248,23 +1322,35 @@
       {
         "name": "Poppy Arford",
         "party": "D"
+      },
+      {
+        "name": "Ravi Jackson",
+        "party": "R"
       }
     ],
     "102": [
       {
-        "name": "Melanie Sachs",
+        "name": "Henry Lawrence III",
+        "party": "R"
+      },
+      {
+        "name": "Maura Pillsbury",
         "party": "D"
       }
     ],
     "103": [
       {
-        "name": "Arthur Bell",
+        "name": "Karin Orenstein",
         "party": "D"
       }
     ],
     "104": [
       {
-        "name": "Amy Arata",
+        "name": "Samuel Pfeifle",
+        "party": "I"
+      },
+      {
+        "name": "Melissa Winslow",
         "party": "R"
       }
     ],
@@ -278,9 +1364,17 @@
       {
         "name": "Barbara Bagshaw",
         "party": "R"
+      },
+      {
+        "name": "Bradley Youngs",
+        "party": "D"
       }
     ],
     "107": [
+      {
+        "name": "Joseph Campbell",
+        "party": "D"
+      },
       {
         "name": "Mark Cooper",
         "party": "R"
@@ -288,26 +1382,32 @@
     ],
     "108": [
       {
+        "name": "Kelly Dearborn",
+        "party": "R"
+      },
+      {
         "name": "Parnell Terry",
         "party": "D"
       }
     ],
     "109": [
       {
-        "name": "Eleanor Sato",
-        "party": "D"
-      }
-    ],
-    "11": [
-      {
-        "name": "Tiffany Strout",
+        "name": "Diana Kushnar",
         "party": "R"
+      },
+      {
+        "name": "Seven Siegel",
+        "party": "D"
       }
     ],
     "110": [
       {
-        "name": "Christina Mitchell",
+        "name": "Christina Rue Cork Mitchell",
         "party": "D"
+      },
+      {
+        "name": "Jason Copp",
+        "party": "R"
       }
     ],
     "111": [
@@ -318,8 +1418,12 @@
     ],
     "112": [
       {
-        "name": "W. Crockett",
-        "party": "U"
+        "name": "Lauren Jones",
+        "party": "R"
+      },
+      {
+        "name": "Sean Mahoney",
+        "party": "D"
       }
     ],
     "113": [
@@ -330,13 +1434,13 @@
     ],
     "114": [
       {
-        "name": "Dylan Pugh",
+        "name": "April Fournier",
         "party": "D"
       }
     ],
     "115": [
       {
-        "name": "Michael Brennan",
+        "name": "Andrew Zarro",
         "party": "D"
       }
     ],
@@ -348,7 +1452,7 @@
     ],
     "117": [
       {
-        "name": "Matt Moonen",
+        "name": "Matthew Moonen",
         "party": "D"
       }
     ],
@@ -360,26 +1464,28 @@
     ],
     "119": [
       {
-        "name": "Charles Skold",
-        "party": "D"
-      }
-    ],
-    "12": [
-      {
-        "name": "Billy Bob Faulkingham",
+        "name": "Jacob Wakem",
         "party": "R"
+      },
+      {
+        "name": "Michael Dixon",
+        "party": "D"
       }
     ],
     "120": [
       {
-        "name": "Deqa Dhalac",
+        "name": "Jason Shedlock",
         "party": "D"
       }
     ],
     "121": [
       {
-        "name": "Christopher Kessler",
+        "name": "Lucy Perkins",
         "party": "D"
+      },
+      {
+        "name": "Meagan Smith",
+        "party": "R"
       }
     ],
     "122": [
@@ -396,8 +1502,16 @@
     ],
     "124": [
       {
-        "name": "Sophia Warren",
+        "name": "Eric Nathanson",
         "party": "D"
+      },
+      {
+        "name": "Mary Lindstrom",
+        "party": "I"
+      },
+      {
+        "name": "Scott Doherty",
+        "party": "R"
       }
     ],
     "125": [
@@ -408,8 +1522,12 @@
     ],
     "126": [
       {
-        "name": "Drew Gattine",
+        "name": "Andrew Gattine",
         "party": "D"
+      },
+      {
+        "name": "Ethan Mongue",
+        "party": "R"
       }
     ],
     "127": [
@@ -419,6 +1537,10 @@
       }
     ],
     "128": [
+      {
+        "name": "Lawrence McWilliams",
+        "party": "I"
+      },
       {
         "name": "Suzanne Salisbury",
         "party": "D"
@@ -430,21 +1552,23 @@
         "party": "D"
       }
     ],
-    "13": [
-      {
-        "name": "Russell White",
-        "party": "R"
-      }
-    ],
     "130": [
       {
         "name": "Lynn Copeland",
         "party": "D"
+      },
+      {
+        "name": "Todd Davis",
+        "party": "I"
       }
     ],
     "131": [
       {
-        "name": "Lori Gramlich",
+        "name": "Kenneth Blow",
+        "party": "I"
+      },
+      {
+        "name": "Robert Kelly",
         "party": "D"
       }
     ],
@@ -456,11 +1580,19 @@
     ],
     "133": [
       {
-        "name": "Marc Malon",
+        "name": "Marc Malon II",
         "party": "D"
+      },
+      {
+        "name": "Marc Lessard",
+        "party": "I"
       }
     ],
     "134": [
+      {
+        "name": "Allen Daggett",
+        "party": "I"
+      },
       {
         "name": "Traci Gere",
         "party": "D"
@@ -468,17 +1600,29 @@
     ],
     "135": [
       {
-        "name": "Daniel Sayre",
+        "name": "Lisa Pratt",
         "party": "D"
+      },
+      {
+        "name": "Scott Craig",
+        "party": "I"
       }
     ],
     "136": [
       {
         "name": "John Eder",
         "party": "R"
+      },
+      {
+        "name": "Michelle Conners",
+        "party": "D"
       }
     ],
     "137": [
+      {
+        "name": "Charles Tilburg",
+        "party": "D"
+      },
       {
         "name": "Nathan Carlow",
         "party": "R"
@@ -486,23 +1630,29 @@
     ],
     "138": [
       {
-        "name": "Mark Blier",
+        "name": "Jonathan Kinney",
         "party": "R"
+      },
+      {
+        "name": "Oliver McAvoy",
+        "party": "D"
       }
     ],
     "139": [
       {
-        "name": "David Woodsome",
+        "name": "Dean LePage",
+        "party": "D"
+      },
+      {
+        "name": "Jamie Newton",
         "party": "R"
       }
     ],
-    "14": [
-      {
-        "name": "Gary Friedmann",
-        "party": "D"
-      }
-    ],
     "140": [
+      {
+        "name": "Kirstan Watson",
+        "party": "D"
+      },
       {
         "name": "Wayne Parry",
         "party": "R"
@@ -510,37 +1660,65 @@
     ],
     "141": [
       {
-        "name": "Lucas Lanigan",
+        "name": "David Mongeau II",
+        "party": "I"
+      },
+      {
+        "name": "Marc Boisse",
         "party": "R"
+      },
+      {
+        "name": "Rebecca Flood Andrews",
+        "party": "D"
       }
     ],
     "142": [
       {
-        "name": "Anne-Marie Mastraccio",
+        "name": "Ayn Hanselmann",
         "party": "D"
+      },
+      {
+        "name": "Domingo Torres",
+        "party": "R"
       }
     ],
     "143": [
       {
-        "name": "Ann Fredericks",
+        "name": "John Henkelman",
+        "party": "D"
+      },
+      {
+        "name": "Melissa Simpson",
         "party": "R"
       }
     ],
     "144": [
       {
-        "name": "Jeffrey Adams",
+        "name": "Corinna Cole",
+        "party": "I"
+      },
+      {
+        "name": "Karen Gerrish",
         "party": "R"
       }
     ],
     "145": [
       {
-        "name": "Robert Foley",
+        "name": "Caleb Chase",
         "party": "R"
+      },
+      {
+        "name": "Kristin Davis",
+        "party": "D"
       }
     ],
     "146": [
       {
-        "name": "Walter Runte",
+        "name": "Bradley Moulton",
+        "party": "R"
+      },
+      {
+        "name": "Walter Runte Jr.",
         "party": "D"
       }
     ],
@@ -552,595 +1730,53 @@
     ],
     "148": [
       {
+        "name": "Marissa Tasker",
+        "party": "D"
+      },
+      {
         "name": "Thomas Lavigne",
         "party": "R"
       }
     ],
     "149": [
       {
-        "name": "Tiffany Roberts",
+        "name": "Mallory Cook",
         "party": "D"
-      }
-    ],
-    "15": [
+      },
       {
-        "name": "Holly Eaton",
-        "party": "D"
+        "name": "Timothy Towne",
+        "party": "R"
       }
     ],
     "150": [
       {
-        "name": "Michele Meyer",
+        "name": "Alexandros Orestis",
         "party": "D"
+      },
+      {
+        "name": "Mark  Zimmer",
+        "party": "R"
       }
     ],
     "151": [
       {
         "name": "Kristi Mathieson",
         "party": "D"
-      }
-    ],
-    "16": [
+      },
       {
-        "name": "Nina Milliken",
-        "party": "D"
-      }
-    ],
-    "17": [
-      {
-        "name": "Steven Bishop",
+        "name": "Suzanne Johnson",
         "party": "R"
-      }
-    ],
-    "18": [
-      {
-        "name": "Mathew McIntyre",
-        "party": "R"
-      }
-    ],
-    "19": [
-      {
-        "name": "Richard Campbell",
-        "party": "R"
-      }
-    ],
-    "2": [
-      {
-        "name": "Roger Albert",
-        "party": "R"
-      }
-    ],
-    "20": [
-      {
-        "name": "Dani O&#x27;Halloran",
-        "party": "D"
-      }
-    ],
-    "21": [
-      {
-        "name": "Ambureen Rana",
-        "party": "D"
-      }
-    ],
-    "22": [
-      {
-        "name": "Laura Supica",
-        "party": "D"
-      }
-    ],
-    "23": [
-      {
-        "name": "Amy Roeder",
-        "party": "D"
-      }
-    ],
-    "24": [
-      {
-        "name": "Sean Faircloth",
-        "party": "D"
-      }
-    ],
-    "25": [
-      {
-        "name": "Laurie Osher",
-        "party": "D"
-      }
-    ],
-    "26": [
-      {
-        "name": "James Dill",
-        "party": "D"
-      }
-    ],
-    "27": [
-      {
-        "name": "Gary Drinkwater",
-        "party": "R"
-      }
-    ],
-    "28": [
-      {
-        "name": "Irene Gifford",
-        "party": "R"
-      }
-    ],
-    "29": [
-      {
-        "name": "Nancy Theriault",
-        "party": "R"
-      }
-    ],
-    "3": [
-      {
-        "name": "Mark Babin",
-        "party": "R"
-      }
-    ],
-    "30": [
-      {
-        "name": "James White",
-        "party": "R"
-      }
-    ],
-    "31": [
-      {
-        "name": "Chad Perkins",
-        "party": "R"
-      }
-    ],
-    "32": [
-      {
-        "name": "Steven Foster",
-        "party": "R"
-      }
-    ],
-    "33": [
-      {
-        "name": "Kenneth Fredette",
-        "party": "R"
-      }
-    ],
-    "34": [
-      {
-        "name": "Abigail Griffin",
-        "party": "R"
-      }
-    ],
-    "35": [
-      {
-        "name": "James Thorne",
-        "party": "R"
-      }
-    ],
-    "36": [
-      {
-        "name": "Kimberly Haggan",
-        "party": "R"
-      }
-    ],
-    "37": [
-      {
-        "name": "Reagan Paul",
-        "party": "R"
-      }
-    ],
-    "38": [
-      {
-        "name": "Benjamin Hymes",
-        "party": "R"
-      }
-    ],
-    "39": [
-      {
-        "name": "Janice Dodge",
-        "party": "D"
-      }
-    ],
-    "4": [
-      {
-        "name": "Timothy Guerrette",
-        "party": "R"
-      }
-    ],
-    "40": [
-      {
-        "name": "D. Ray",
-        "party": "D"
-      }
-    ],
-    "41": [
-      {
-        "name": "Victoria Doudera",
-        "party": "D"
-      }
-    ],
-    "42": [
-      {
-        "name": "Valli Geiger",
-        "party": "D"
-      }
-    ],
-    "43": [
-      {
-        "name": "Ann Matlack",
-        "party": "D"
-      }
-    ],
-    "44": [
-      {
-        "name": "William Pluecker",
-        "party": "U"
-      }
-    ],
-    "45": [
-      {
-        "name": "Abden Simmons",
-        "party": "R"
-      }
-    ],
-    "46": [
-      {
-        "name": "Lydia Crafts",
-        "party": "D"
-      }
-    ],
-    "47": [
-      {
-        "name": "Wayne Farrin",
-        "party": "D"
-      }
-    ],
-    "48": [
-      {
-        "name": "Holly Stover",
-        "party": "D"
-      }
-    ],
-    "49": [
-      {
-        "name": "Allison Hepler",
-        "party": "D"
-      }
-    ],
-    "5": [
-      {
-        "name": "Joseph Underwood",
-        "party": "R"
-      }
-    ],
-    "50": [
-      {
-        "name": "David Sinclair",
-        "party": "D"
-      }
-    ],
-    "51": [
-      {
-        "name": "Rafael Macias",
-        "party": "D"
-      }
-    ],
-    "52": [
-      {
-        "name": "Sally Cluchey",
-        "party": "D"
-      }
-    ],
-    "53": [
-      {
-        "name": "Michael Lemelin",
-        "party": "R"
-      }
-    ],
-    "54": [
-      {
-        "name": "Karen Montell",
-        "party": "D"
-      }
-    ],
-    "55": [
-      {
-        "name": "Daniel Shagoury",
-        "party": "D"
-      }
-    ],
-    "56": [
-      {
-        "name": "Randall Greenwood",
-        "party": "R"
-      }
-    ],
-    "57": [
-      {
-        "name": "Tavis Hasenfus",
-        "party": "D"
-      }
-    ],
-    "58": [
-      {
-        "name": "Sharon Frost",
-        "party": "U"
-      }
-    ],
-    "59": [
-      {
-        "name": "David Rollins",
-        "party": "D"
-      }
-    ],
-    "6": [
-      {
-        "name": "Donald Ardell",
-        "party": "R"
-      }
-    ],
-    "60": [
-      {
-        "name": "William Bridgeo",
-        "party": "D"
-      }
-    ],
-    "61": [
-      {
-        "name": "Alicia Collins",
-        "party": "R"
-      }
-    ],
-    "62": [
-      {
-        "name": "Katrina Smith",
-        "party": "R"
-      }
-    ],
-    "63": [
-      {
-        "name": "Paul Flynn",
-        "party": "R"
-      }
-    ],
-    "64": [
-      {
-        "name": "Flavia DeBrito",
-        "party": "D"
-      }
-    ],
-    "65": [
-      {
-        "name": "Cassie Julia",
-        "party": "D"
-      }
-    ],
-    "66": [
-      {
-        "name": "Robert Nutting",
-        "party": "R"
-      }
-    ],
-    "67": [
-      {
-        "name": "Shelley Rudnicki",
-        "party": "R"
-      }
-    ],
-    "68": [
-      {
-        "name": "Amanda Collamore",
-        "party": "R"
-      }
-    ],
-    "69": [
-      {
-        "name": "Dean Cray",
-        "party": "R"
-      }
-    ],
-    "7": [
-      {
-        "name": "Gregory Swallow",
-        "party": "R"
-      }
-    ],
-    "70": [
-      {
-        "name": "Jennifer Poirier",
-        "party": "R"
-      }
-    ],
-    "71": [
-      {
-        "name": "John Ducharme",
-        "party": "R"
-      }
-    ],
-    "72": [
-      {
-        "name": "Elizabeth Caruso",
-        "party": "R"
-      }
-    ],
-    "73": [
-      {
-        "name": "Michael Soboleski",
-        "party": "R"
-      }
-    ],
-    "74": [
-      {
-        "name": "Randall Hall",
-        "party": "R"
-      }
-    ],
-    "75": [
-      {
-        "name": "Stephan Bunker",
-        "party": "D"
-      }
-    ],
-    "76": [
-      {
-        "name": "Sheila Lyman",
-        "party": "R"
-      }
-    ],
-    "77": [
-      {
-        "name": "Tammy Schmersal-Burgess",
-        "party": "R"
-      }
-    ],
-    "78": [
-      {
-        "name": "Rachel Henderson",
-        "party": "R"
-      }
-    ],
-    "79": [
-      {
-        "name": "Michael Lance",
-        "party": "R"
-      }
-    ],
-    "8": [
-      {
-        "name": "Tracy Quint",
-        "party": "R"
-      }
-    ],
-    "80": [
-      {
-        "name": "Caldwell Jackson",
-        "party": "R"
-      }
-    ],
-    "81": [
-      {
-        "name": "Peter Wood",
-        "party": "R"
-      }
-    ],
-    "82": [
-      {
-        "name": "Nathan Wadsworth",
-        "party": "R"
-      }
-    ],
-    "83": [
-      {
-        "name": "Marygrace Cimino",
-        "party": "R"
-      }
-    ],
-    "84": [
-      {
-        "name": "Mark Walker",
-        "party": "R"
-      }
-    ],
-    "85": [
-      {
-        "name": "Kimberly Pomerleau",
-        "party": "R"
-      }
-    ],
-    "86": [
-      {
-        "name": "Rolf Olsen",
-        "party": "R"
-      }
-    ],
-    "87": [
-      {
-        "name": "David Boyer",
-        "party": "R"
-      }
-    ],
-    "88": [
-      {
-        "name": "Quentin Chapman",
-        "party": "R"
-      }
-    ],
-    "89": [
-      {
-        "name": "Adam Lee",
-        "party": "D"
-      }
-    ],
-    "9": [
-      {
-        "name": "Arthur Mingo",
-        "party": "R"
-      }
-    ],
-    "90": [
-      {
-        "name": "Laurel Libby",
-        "party": "R"
-      }
-    ],
-    "91": [
-      {
-        "name": "Joshua Morris",
-        "party": "R"
-      }
-    ],
-    "92": [
-      {
-        "name": "Stephen Wood",
-        "party": "R"
-      }
-    ],
-    "93": [
-      {
-        "name": "Julia McCabe",
-        "party": "D"
-      }
-    ],
-    "94": [
-      {
-        "name": "Scott Harriman",
-        "party": "D"
-      }
-    ],
-    "95": [
-      {
-        "name": "Mana Abdi",
-        "party": "D"
-      }
-    ],
-    "96": [
-      {
-        "name": "Michel Lajoie",
-        "party": "D"
-      }
-    ],
-    "97": [
-      {
-        "name": "Richard Mason",
-        "party": "R"
-      }
-    ],
-    "98": [
-      {
-        "name": "Kilton Webb",
-        "party": "D"
-      }
-    ],
-    "99": [
-      {
-        "name": "Cheryl Golek",
-        "party": "D"
       }
     ]
   },
   "us_senate": [
     {
-      "name": "Susan M. Collins",
+      "name": "Susan Collins",
       "party": "R"
     },
     {
-      "name": "Angus S. King, Jr.",
-      "party": "I"
+      "name": "Troy Jackson",
+      "party": "D"
     }
   ]
 }

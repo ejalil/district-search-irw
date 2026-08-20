@@ -44,6 +44,7 @@
     --surface: #fff;             /* input + dropdown surface */
     --bg-hover: #fafafc;
     --bg-card: #f9f9fb;
+    --office-tint: rgba(240,90,41,.07);   /* faint wash on the office shown on the map */
   }
 
   /* Dark mode: mirrors the finance pages (data-scheme set by the JS below,
@@ -59,6 +60,7 @@
     --surface: #1e1e1e;
     --bg-hover: #2a2a2a;
     --bg-card: #1e1e1e;
+    --office-tint: rgba(240,90,41,.14);
   }
 
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -82,7 +84,7 @@
   /* A short instruction sits above the bar; the page opens as just these two. */
   .intro { max-width: 540px; margin: 60px auto 22px; text-align: center; }
   .search-intro {
-    font-size: 1.02rem; line-height: 1.5; color: var(--text-secondary);
+    font-size: 1.2rem; line-height: 1.45; color: var(--text-secondary);
     text-wrap: balance;
   }
   /* One rounded pill: ink border, icon button flush to the field. */
@@ -129,7 +131,7 @@
     max-width: 620px; margin: 44px auto 0; padding-top: 20px;
     border-top: 1px solid var(--border);
   }
-  .sources { font-size: 0.78rem; line-height: 1.6; color: var(--text-muted); }
+  .sources { font-size: 0.8rem; line-height: 1.7; color: var(--text); }
   .credit { font-size: 0.8rem; line-height: 1.7; color: var(--text); }
   .sources + .credit { margin-top: 12px; }
   .pagefoot a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
@@ -224,6 +226,16 @@
   }
   .rep-kicker:first-of-type { margin-top: 18px; }
   .rep-hint { color: var(--text-muted); font-size: 0.9rem; padding: 22px 2px; }
+  /* Each office's candidates are grouped so the one shown on the map (the active
+     tab) can be called out — connecting "State Senate" on the map to the State
+     Senate candidates in the list. A soft full-width wash, keyed to the same
+     orange the map shades the district with — no accent bar, so it reads as a
+     highlighted passage rather than a UI card. */
+  .rep-group {
+    margin: 0 -14px; padding: 2px 14px; border-radius: 3px;
+    transition: background .15s;
+  }
+  .rep-group.active-office { background: var(--office-tint); }
   .rep-row {
     display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
     padding: 16px 2px; border-bottom: 1px solid var(--border);
@@ -266,7 +278,7 @@
 <div class="container">
 
   <div class="intro">
-    <p class="search-intro">Search any Maine address to see its voting districts and the officials who represent you.</p>
+    <p class="search-intro">Input your address to find voter guide and campaign finance data for your state and federal districts.</p>
   </div>
 
   <div class="search-wrap">
@@ -298,13 +310,14 @@
       <div id="map"></div>
     </div>
     <div class="rep-col">
-      <div class="ribbon"><span class="ribbon-text">Your Representatives</span></div>
+      <!-- Heading language pending Kate/Stephanie approval — placeholder for now. -->
+      <div class="ribbon"><span class="ribbon-text">Candidates on Your Ballot</span></div>
       <div id="rep_box"></div>
     </div>
   </div>
 
   <footer class="pagefoot">
-    <p class="sources">District boundaries are Maine’s 2021 voting districts, published by Maine GeoLibrary from the redistricting that followed the 2020 Census: <a href="https://maine.hub.arcgis.com/datasets/0e4a31b61b714ba08a3e9b3c2b752d77_3" target="_blank" rel="noopener">U.S. House</a>, <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-senate" target="_blank" rel="noopener">State Senate</a> and <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-house" target="_blank" rel="noopener">State House</a>. Addresses are located using OpenStreetMap.</p>
+    <p class="sources">District boundaries sourced from the Maine GeoLibrary, based on the redistricting that followed the 2020 Census: <a href="https://maine.hub.arcgis.com/datasets/0e4a31b61b714ba08a3e9b3c2b752d77_3" target="_blank" rel="noopener">U.S. House</a>, <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-senate" target="_blank" rel="noopener">State Senate</a> and <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-house" target="_blank" rel="noopener">State House</a>. Addresses are based on streets registered with <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a>.</p>
     <p class="credit">Developed in partnership with Ela Jalil and Aarushi Sahejpal of the Investigative Reporting Workshop, a nonprofit newsroom based at American University.</p>
   </footer>
 
@@ -487,6 +500,7 @@ async function showLayer(key){
   }
   if (!map.hasLayer(drawn[key])) drawn[key].addTo(map);
   if (marker) marker.bringToFront();
+  syncRepHighlight();
 }
 document.querySelectorAll("#map_tabs button[data-layer]").forEach(b =>
   b.addEventListener("click", () => showLayer(b.dataset.layer).then(frameActiveDistrict)));
@@ -501,10 +515,6 @@ function stripUnit(s){
     .replace(/,?\s*#\s*[\w-]+/g, "")
     .replace(/\s+,/g, ",").replace(/,\s*,/g, ",").replace(/\s{2,}/g, " ").trim();
 }
-
-// Rough test: did the user already give a town or ZIP? Used to tailor the
-// not-found message — "add a town and ZIP" only helps if they left one off.
-function hasTownOrZip(s){ return /\d{5}/.test(s) || /,\s*[A-Za-z]/.test(s); }
 
 async function geocode(address){
   address = stripUnit(address);
@@ -551,11 +561,15 @@ function frameActiveDistrict(reveal){
   const gj = cfg && geojsonCache[cfg.file];
   const b = gj && districtBounds(gj, highlighted[activeLayerKey]);
   if (!(b && b.isValid())) return;
+  // maxZoom is the cap, not the target: fitBounds only zooms as far as needed to
+  // fit the district, so a large district still sits low while a tiny one is now
+  // allowed to zoom in far enough to be legible (a dot-sized district used to
+  // bottom out at 13 and read as a speck).
   if (reveal && maineBounds) {
     map.fitBounds(maineBounds, { animate: false });                        // start wide: all of Maine
-    map.flyToBounds(b, { padding: [30, 30], maxZoom: 13, duration: 1.3 }); // then glide into the district
+    map.flyToBounds(b, { padding: [30, 30], maxZoom: 15, duration: 1.3 }); // then glide into the district
   } else {
-    map.fitBounds(b, { padding: [30, 30], maxZoom: 13, animate: true, duration: 0.8 });
+    map.fitBounds(b, { padding: [30, 30], maxZoom: 15, animate: true, duration: 0.8 });
   }
 }
 
@@ -575,15 +589,16 @@ function renderNotFound(address){
   document.getElementById("results").style.display = "none";
   const box = document.getElementById("result_box");
   box.style.display = "block";
-  // Only nudge for a town/ZIP if they actually left one off; otherwise the
-  // address just isn't on the map yet (or has a typo).
-  const hint = hasTownOrZip(address)
-    ? "Double-check the spelling, or try a nearby address — the street may be too new to appear yet."
-    : "Add a town and ZIP code, then search again.";
+  // Pre-fill the contact email with what they typed, so a reader can report a
+  // genuine miss in one click.
+  const mail = "mailto:contact@themainemonitor.org"
+    + "?subject=" + encodeURIComponent("Address lookup issue")
+    + "&body=" + encodeURIComponent("Address entered: " + address);
   box.innerHTML =
     `<div class="notice">
        <p class="notice-lead">We couldn’t find that address.</p>
-       <p class="notice-hint">${hint}</p>
+       <p class="notice-hint">Please check the spelling of the address. If you live on a new street, please note there may be a delay when new streets are registered and appear in public databases; in that case, please search a nearby address.</p>
+       <p class="notice-hint">If you believe you are seeing this message in error, please email the address you entered to <a href="${esc(mail)}">contact@themainemonitor.org</a>.</p>
      </div>`;
 }
 
@@ -615,21 +630,34 @@ function repGroup(layer, roleLabel, district){
   const reps = repsFor(layer, district);
   if (!reps.length) {
     return `<div class="rep-row is-empty">
-      <div><span class="rep-name">Not found</span>
+      <div><span class="rep-name">No candidate listed</span>
       <div class="rep-role">${esc(roleLabel)}${district != null ? " · District " + esc(district) : ""}</div></div></div>`;
   }
   return reps.map(r => repRow(layer, roleLabel, district, r)).join("");
 }
 
+// Wrap an office's rows so the active map tab can highlight the matching group.
+function repSection(layer, roleLabel, district){
+  return `<div class="rep-group" data-office="${layer}">${repGroup(layer, roleLabel, district)}</div>`;
+}
+
 function renderRepresentatives(values){
   document.getElementById("rep_box").innerHTML = `
     <div class="rep-kicker">State</div>
-    ${repGroup("state_senate", "State Senate", values.state_senate)}
-    ${repGroup("state_house", "State House", values.state_house)}
+    ${repSection("state_senate", "State Senate", values.state_senate)}
+    ${repSection("state_house", "State House", values.state_house)}
     <div class="rep-kicker">Federal</div>
-    ${repGroup("us_senate", "U.S. Senator", null)}
-    ${repGroup("congressional", "U.S. House", values.congressional)}
+    ${repSection("us_senate", "U.S. Senator", null)}
+    ${repSection("congressional", "U.S. House", values.congressional)}
   `;
+  syncRepHighlight();
+}
+
+// Highlight the candidate group whose office is showing on the map (the active
+// tab). us_senate has no tab, so it simply never lights up.
+function syncRepHighlight(){
+  document.querySelectorAll("#rep_box .rep-group").forEach(g =>
+    g.classList.toggle("active-office", g.dataset.office === activeLayerKey));
 }
 
 // ── Lookup ──────────────────────────────────────────────────────────────────
@@ -759,13 +787,23 @@ addressEl.addEventListener("keydown", e => {
   else if (e.key === "ArrowUp" && open) { e.preventDefault(); setActive(suggActive - 1); }
   else if (e.key === "Enter") {
     e.preventDefault();
+    // Kill any pending/in-flight suggestion work so it can't race the lookup or
+    // pop the dropdown open over the results a beat later.
+    clearTimeout(suggTimer);
+    if (suggController) suggController.abort();
     if (open && suggActive >= 0) selectSuggestion(suggItems[suggActive]);
+    else if (open && suggItems.length) selectSuggestion(suggItems[0]);  // matches shown but none arrowed-to → take the top one (skips a second geocode)
     else { closeSuggestions(); runLookup(); }
   } else if (e.key === "Escape") { closeSuggestions(); }
 });
 
 addressEl.addEventListener("blur", () => setTimeout(closeSuggestions, 120));
-document.getElementById("lookup").addEventListener("click", () => { closeSuggestions(); runLookup(); });
+document.getElementById("lookup").addEventListener("click", () => {
+  clearTimeout(suggTimer);
+  if (suggController) suggController.abort();
+  if (suggBox.classList.contains("open") && suggItems.length) { selectSuggestion(suggItems[0]); return; }
+  closeSuggestions(); runLookup();
+});
 </script>
 </body>
 </html>

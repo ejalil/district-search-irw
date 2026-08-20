@@ -255,7 +255,6 @@
     font-size: 0.78rem; font-weight: 700; line-height: 1;
     color: #fff; background: var(--gray); flex: 0 0 auto;
   }
-  .rep-role { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
   .rep-cta {
     font-size: 0.8rem; font-weight: 600; color: var(--accent-dark);
     white-space: nowrap; flex: 0 0 auto;
@@ -610,46 +609,42 @@ function repsFor(layer, district){
   return (REPS[layer] && REPS[layer][String(district)]) || [];
 }
 
-function repRow(layer, roleLabel, district, rep){
+// One candidate row: name + party badge, linking to the race's voter-guide page.
+// The office and district are named once in the section header above, so they
+// aren't repeated under every name.
+function repRow(layer, district, rep){
   const party = PARTY[rep.party] || { label: rep.party || "Unknown", color: "var(--gray)" };
   const letter = esc(party.abbr || (rep.party || "?").toUpperCase().slice(0, 1));
-  const role = district != null ? `${roleLabel} · District ${district}` : roleLabel;
   const href = (RESULT_LINK[layer] || (() => null))(district, rep);
-  const inner = `
-    <div>
-      <div class="rep-headline"><span class="rep-name">${esc(rep.name)}</span><span class="rep-party" style="background:${party.color}" title="${esc(party.label)}" aria-label="${esc(party.label)}">${letter}</span></div>
-      <div class="rep-role">${esc(role)}</div>
-    </div>`;
+  const inner = `<div><div class="rep-headline"><span class="rep-name">${esc(rep.name)}</span><span class="rep-party" style="background:${party.color}" title="${esc(party.label)}" aria-label="${esc(party.label)}">${letter}</span></div></div>`;
   if (href) {
     return `<a class="rep-row" href="${esc(href)}" target="_blank" rel="noopener">${inner}<span class="rep-cta">${RESULT_ACTION_LABEL}</span></a>`;
   }
   return `<div class="rep-row">${inner}</div>`;
 }
 
-function repGroup(layer, roleLabel, district){
+// One race as its own titled section: a header naming the office (and district),
+// then everyone running in it — so it reads as who is up against whom. Grouped
+// so the active map tab can highlight the matching race.
+function raceSection(layer, raceLabel, district){
+  const heading = district != null ? `${raceLabel} · District ${district}` : raceLabel;
   const reps = repsFor(layer, district);
-  if (!reps.length) {
-    return `<div class="rep-row is-empty">
-      <div><span class="rep-name">No candidate listed</span>
-      <div class="rep-role">${esc(roleLabel)}${district != null ? " · District " + esc(district) : ""}</div></div></div>`;
-  }
-  return reps.map(r => repRow(layer, roleLabel, district, r)).join("");
-}
-
-// Wrap an office's rows so the active map tab can highlight the matching group.
-function repSection(layer, roleLabel, district){
-  return `<div class="rep-group" data-office="${layer}">${repGroup(layer, roleLabel, district)}</div>`;
+  const rows = reps.length
+    ? reps.map(r => repRow(layer, district, r)).join("")
+    : `<div class="rep-row is-empty"><div><span class="rep-name">No candidate listed</span></div></div>`;
+  return `<div class="rep-group" data-office="${esc(layer)}">
+      <div class="rep-kicker">${esc(heading)}</div>
+      ${rows}
+    </div>`;
 }
 
 function renderRepresentatives(values){
-  document.getElementById("rep_box").innerHTML = `
-    <div class="rep-kicker">State</div>
-    ${repSection("state_senate", "State Senate", values.state_senate)}
-    ${repSection("state_house", "State House", values.state_house)}
-    <div class="rep-kicker">Federal</div>
-    ${repSection("us_senate", "U.S. Senator", null)}
-    ${repSection("congressional", "U.S. House", values.congressional)}
-  `;
+  document.getElementById("rep_box").innerHTML = [
+    raceSection("state_senate",  "State Senate", values.state_senate),
+    raceSection("state_house",   "State House",  values.state_house),
+    raceSection("us_senate",     "U.S. Senate",  null),
+    raceSection("congressional", "U.S. House",   values.congressional),
+  ].join("");
   syncRepHighlight();
 }
 

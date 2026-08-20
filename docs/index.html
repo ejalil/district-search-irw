@@ -799,6 +799,26 @@ document.getElementById("lookup").addEventListener("click", () => {
   if (suggBox.classList.contains("open") && suggItems.length) { selectSuggestion(suggItems[0]); return; }
   closeSuggestions(); runLookup();
 });
+
+// ── Embed height reporting ───────────────────────────────────────────────────
+// When this page runs inside an iframe, post its content height to the parent
+// so a host page (e.g. WordPress) can auto-resize the iframe as the tool grows
+// from just the search bar to the full map + candidate list. Harmless when not
+// embedded. The parent listens for { type: "mm-district-search:height" }.
+(function(){
+  if (window.parent === window) return;               // not embedded — nothing to do
+  let last = 0;
+  function postHeight(){
+    const h = Math.ceil(document.documentElement.scrollHeight);
+    if (h === last) return;                            // only post on change
+    last = h;
+    window.parent.postMessage({ type: "mm-district-search:height", height: h }, "*");
+  }
+  window.addEventListener("load", postHeight);
+  window.addEventListener("resize", postHeight);
+  if (window.ResizeObserver) new ResizeObserver(postHeight).observe(document.body);
+  setTimeout(postHeight, 300);                         // catch async map/results renders
+})();
 </script>
 </body>
 </html>

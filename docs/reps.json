@@ -1,4 +1,15 @@
 {
+  "governor": [],
+  "us_senate": [
+    {
+      "name": "Susan Collins",
+      "party": "R"
+    },
+    {
+      "name": "Troy Jackson",
+      "party": "D"
+    }
+  ],
   "congressional": {
     "1": [
       {
@@ -1768,15 +1779,5 @@
         "party": "R"
       }
     ]
-  },
-  "us_senate": [
-    {
-      "name": "Susan Collins",
-      "party": "R"
-    },
-    {
-      "name": "Troy Jackson",
-      "party": "D"
-    }
-  ]
+  }
 }

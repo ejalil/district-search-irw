@@ -245,7 +245,6 @@
     font-family: 'Lora', Georgia, serif;
     font-size: 1.1rem; font-weight: 700; line-height: 1.3;
   }
-  a.rep-row:hover .rep-name { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
   /* Name + party badge share a flex line so the circle centers to the name. */
   .rep-headline { display: flex; align-items: center; gap: 8px; }
   /* Party badge: a filled circle holding the party letter (D/R/I/U). */
@@ -255,9 +254,11 @@
     font-size: 0.78rem; font-weight: 700; line-height: 1;
     color: #fff; background: var(--gray); flex: 0 0 auto;
   }
-  .rep-cta {
+  /* Race header carries the one voter-guide link: label left, link right. */
+  .rep-kicker-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .race-link {
     font-size: 0.8rem; font-weight: 600; color: var(--accent-dark);
-    white-space: nowrap; flex: 0 0 auto;
+    text-transform: none; letter-spacing: 0; white-space: nowrap; flex: 0 0 auto;
     text-decoration: underline; text-underline-offset: 3px;  /* reads as a link, even on touch */
   }
   .rep-row.is-empty .rep-name { color: var(--text-muted); font-weight: 400; font-style: italic; }
@@ -277,7 +278,7 @@
 <div class="container">
 
   <div class="intro">
-    <p class="search-intro">Input your address to find voter guide and campaign finance data for your state and federal districts.</p>
+    <p class="search-intro">Type in your address to see who’s on your ballot.</p>
   </div>
 
   <div class="search-wrap">
@@ -302,7 +303,7 @@
   <div class="page-flex" id="results">
     <div class="map-col">
       <div class="map-tabs" id="map_tabs">
-        <button data-layer="congressional" class="active">US House</button>
+        <button data-layer="congressional" class="active">U.S. House</button>
         <button data-layer="state_senate">State Senate</button>
         <button data-layer="state_house">State House</button>
       </div>
@@ -339,6 +340,7 @@ const RESULT_ACTION_LABEL = "Voter guide →";
 //   state_house  → MM + "maine-state-house-district-"  + d + "/"
 const MM = "https://themainemonitor.org/";
 const RESULT_LINK = {
+  governor:      (d, r) => MM + "governor-elections/",                  // statewide race
   us_senate:     (d, r) => MM + "us-senate-elections/",                 // statewide race
   congressional: (d, r) => d === "1" ? MM + "1st-congressional-elections/"
                          : d === "2" ? MM + "2nd-congressional-elections/" : null,
@@ -604,47 +606,51 @@ function renderNotFound(address){
 // ── Representatives: ruled list rows ────────────────────────────────────────
 function repsFor(layer, district){
   if (!REPS) return [];
-  if (layer === "us_senate") return REPS.us_senate || [];   // statewide — no district
+  if (layer === "governor" || layer === "us_senate") return REPS[layer] || [];   // statewide — no district
   if (district == null) return [];
   return (REPS[layer] && REPS[layer][String(district)]) || [];
 }
 
-// One candidate row: name + party badge, linking to the race's voter-guide page.
-// The office and district are named once in the section header above, so they
-// aren't repeated under every name.
-function repRow(layer, district, rep){
+// One candidate row: just name + party badge. The voter-guide link lives once on
+// the race header above (one link per race, not one per candidate), so rows are
+// plain, non-clickable text.
+function repRow(rep){
   const party = PARTY[rep.party] || { label: rep.party || "Unknown", color: "var(--gray)" };
   const letter = esc(party.abbr || (rep.party || "?").toUpperCase().slice(0, 1));
-  const href = (RESULT_LINK[layer] || (() => null))(district, rep);
-  const inner = `<div><div class="rep-headline"><span class="rep-name">${esc(rep.name)}</span><span class="rep-party" style="background:${party.color}" title="${esc(party.label)}" aria-label="${esc(party.label)}">${letter}</span></div></div>`;
-  if (href) {
-    return `<a class="rep-row" href="${esc(href)}" target="_blank" rel="noopener">${inner}<span class="rep-cta">${RESULT_ACTION_LABEL}</span></a>`;
-  }
-  return `<div class="rep-row">${inner}</div>`;
+  return `<div class="rep-row"><div><div class="rep-headline"><span class="rep-name">${esc(rep.name)}</span><span class="rep-party" style="background:${party.color}" title="${esc(party.label)}" aria-label="${esc(party.label)}">${letter}</span></div></div></div>`;
 }
 
-// One race as its own titled section: a header naming the office (and district),
-// then everyone running in it — so it reads as who is up against whom. Grouped
-// so the active map tab can highlight the matching race.
+// One race as its own titled section: a header naming the office (and district)
+// with a single voter-guide link, then everyone running in it — so it reads as
+// who is up against whom. Grouped so the active map tab can highlight the race.
 function raceSection(layer, raceLabel, district){
   const heading = district != null ? `${raceLabel} · District ${district}` : raceLabel;
+  const href = (RESULT_LINK[layer] || (() => null))(district, null);
+  const link = href
+    ? `<a class="race-link" href="${esc(href)}" target="_blank" rel="noopener">${RESULT_ACTION_LABEL}</a>`
+    : "";
   const reps = repsFor(layer, district);
   const rows = reps.length
-    ? reps.map(r => repRow(layer, district, r)).join("")
+    ? reps.map(repRow).join("")
     : `<div class="rep-row is-empty"><div><span class="rep-name">No candidate listed</span></div></div>`;
   return `<div class="rep-group" data-office="${esc(layer)}">
-      <div class="rep-kicker">${esc(heading)}</div>
+      <div class="rep-kicker rep-kicker-row"><span>${esc(heading)}</span>${link}</div>
       ${rows}
     </div>`;
 }
 
 function renderRepresentatives(values){
-  document.getElementById("rep_box").innerHTML = [
+  const sections = [];
+  // Governor is statewide; it appears once candidates are added to reps.json.
+  if (REPS && REPS.governor && REPS.governor.length)
+    sections.push(raceSection("governor", "Governor", null));
+  sections.push(
     raceSection("state_senate",  "State Senate", values.state_senate),
     raceSection("state_house",   "State House",  values.state_house),
     raceSection("us_senate",     "U.S. Senate",  null),
     raceSection("congressional", "U.S. House",   values.congressional),
-  ].join("");
+  );
+  document.getElementById("rep_box").innerHTML = sections.join("");
   syncRepHighlight();
 }
 
@@ -751,19 +757,28 @@ function selectSuggestion(s){
 async function fetchSuggestions(q){
   if (suggController) suggController.abort();
   suggController = new AbortController();
-  const url = "https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5"
+  // Over-fetch a little (8) so we still have ~5 left after dropping duplicates.
+  const url = "https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=8"
             + "&countrycodes=us&viewbox=" + MAINE_VIEWBOX + "&bounded=1&q=" + encodeURIComponent(q);
   const resp = await fetch(url, { headers: { Accept: "application/json" }, signal: suggController.signal });
   if (!resp.ok) return [];
   const data = await resp.json();
-  return data.map(d => {
+  // Nominatim can return the same place more than once (different OSM records at
+  // the same address); collapse by the display string so the list has no dupes.
+  const seen = new Set(), out = [];
+  for (const d of data) {
     const a = d.address || {};
     const street = [a.house_number, a.road].filter(Boolean).join(" ");
     const town = a.city || a.town || a.village || a.hamlet || a.county || "";
     const zip = ["ME", a.postcode].filter(Boolean).join(" ");
     const display = [street, town, zip].filter(Boolean).join(", ") || d.display_name;
-    return { display, lat: +d.lat, lon: +d.lon };
-  });
+    const key = display.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({ display, lat: +d.lat, lon: +d.lon });
+    if (out.length >= 5) break;
+  }
+  return out;
 }
 
 addressEl.addEventListener("input", () => {

@@ -254,6 +254,12 @@
     font-size: 0.78rem; font-weight: 700; line-height: 1;
     color: #fff; background: var(--gray); flex: 0 0 auto;
   }
+  /* Small "Write-in" tag to the right of the party badge. Muted, regular weight
+     — a label, not emphasis; distinguishes write-ins that share a party icon. */
+  .rep-writein {
+    font-size: 0.74rem; font-weight: 400; color: var(--text-muted);
+    white-space: nowrap; flex: 0 0 auto;
+  }
   /* Race header carries the one voter-guide link: label left, link right. */
   .rep-kicker-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
   .race-link {
@@ -630,7 +636,10 @@ function repsFor(layer, district){
 function repRow(rep){
   const party = PARTY[rep.party] || { label: rep.party || "Unknown", color: "var(--gray)" };
   const letter = esc(party.abbr || (rep.party || "?").toUpperCase().slice(0, 1));
-  return `<div class="rep-row"><div><div class="rep-headline"><span class="rep-name">${esc(rep.name)}</span><span class="rep-party" style="background:${party.color}" title="${esc(party.label)}" aria-label="${esc(party.label)}">${letter}</span></div></div></div>`;
+  // Write-in candidates (rep.writeIn: true in reps.json) get a small label after
+  // the party badge.
+  const writein = rep.writeIn ? `<span class="rep-writein">Write-in</span>` : "";
+  return `<div class="rep-row"><div><div class="rep-headline"><span class="rep-name">${esc(rep.name)}</span><span class="rep-party" style="background:${party.color}" title="${esc(party.label)}" aria-label="${esc(party.label)}">${letter}</span>${writein}</div></div></div>`;
 }
 
 // One race as its own titled section: a header naming the office (and district)

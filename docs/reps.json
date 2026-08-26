@@ -11,6 +11,16 @@
     {
       "name": "Richard Bennett",
       "party": "I"
+    },
+    {
+      "name": "John Glowa",
+      "party": "I",
+      "writeIn": true
+    },
+    {
+      "name": "Randy Wilcox",
+      "party": "R",
+      "writeIn": true
     }
   ],
   "us_senate": [
@@ -21,6 +31,36 @@
     {
       "name": "Troy Jackson",
       "party": "D"
+    },
+    {
+      "name": "Brent Andrews",
+      "party": "I",
+      "writeIn": true
+    },
+    {
+      "name": "Sigrid Ann Olson",
+      "party": "D",
+      "writeIn": true
+    },
+    {
+      "name": "Gina Oswald",
+      "party": "I",
+      "writeIn": true
+    },
+    {
+      "name": "Joseph Steinberger",
+      "party": "I",
+      "writeIn": true
+    },
+    {
+      "name": "Michael Turcotte",
+      "party": "I",
+      "writeIn": true
+    },
+    {
+      "name": "Ashley Webb",
+      "party": "D",
+      "writeIn": true
     }
   ],
   "congressional": {
@@ -42,6 +82,11 @@
       {
         "name": "Paul LePage",
         "party": "R"
+      },
+      {
+        "name": "Gregory Ward",
+        "party": "I",
+        "writeIn": true
       }
     ]
   },
@@ -604,6 +649,11 @@
       {
         "name": "Sean Faircloth",
         "party": "D"
+      },
+      {
+        "name": "Daniel LaPointe",
+        "party": "R",
+        "writeIn": true
       }
     ],
     "25": [

@@ -306,6 +306,7 @@
         <button data-layer="congressional" class="active">U.S. House</button>
         <button data-layer="state_senate">State Senate</button>
         <button data-layer="state_house">State House</button>
+        <button data-layer="county">County</button>
       </div>
       <div id="map"></div>
     </div>
@@ -317,7 +318,7 @@
   </div>
 
   <footer class="pagefoot">
-    <p class="sources">District boundaries sourced from the Maine GeoLibrary, based on the redistricting that followed the 2020 Census: <a href="https://maine.hub.arcgis.com/datasets/0e4a31b61b714ba08a3e9b3c2b752d77_3" target="_blank" rel="noopener">U.S. House</a>, <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-senate" target="_blank" rel="noopener">State Senate</a> and <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-house" target="_blank" rel="noopener">State House</a>. Addresses are based on streets registered with <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a>.</p>
+    <p class="sources">District boundaries sourced from the Maine GeoLibrary, based on the redistricting that followed the 2020 Census: <a href="https://maine.hub.arcgis.com/datasets/0e4a31b61b714ba08a3e9b3c2b752d77_3" target="_blank" rel="noopener">U.S. House</a>, <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-senate" target="_blank" rel="noopener">State Senate</a> and <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-house" target="_blank" rel="noopener">State House</a>. County boundaries are from the <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html" target="_blank" rel="noopener">U.S. Census Bureau</a>. Addresses are based on streets registered with <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a>.</p>
     <p class="credit">Developed in partnership with Ela Jalil and Aarushi Sahejpal of the Investigative Reporting Workshop, a nonprofit newsroom based at American University.</p>
   </footer>
 
@@ -356,15 +357,19 @@ const PARTY = {
   U: { label: "Unenrolled",  abbr: "U",  color: "var(--gray)" },
 };
 
-// ── Config: the three boundary layers ───────────────────────────────────────
-const DISTRICT_FIELD = "DISTRICT";
+// ── Config: the boundary layers ─────────────────────────────────────────────
+// `field` is the GeoJSON property that names each area — a district number for
+// the voting layers, the county name for the county layer.
+const DISTRICT_FIELD = "DISTRICT";                       // default field for the voting layers
 const LAYERS = [
   { key:"congressional", file:"Maine_Voting_Districts_2021_US_Congress.geojson",
-    label:"U.S. House District", border:"#2471a3" },
+    field:"DISTRICT", label:"U.S. House District", border:"#2471a3" },
   { key:"state_senate", file:"Maine_Voting_Districts_2021_State_Senate.geojson",
-    label:"State Senate District", border:"#6c3483" },
+    field:"DISTRICT", label:"State Senate District", border:"#6c3483" },
   { key:"state_house", file:"Maine_Voting_Districts_2021_House.geojson",
-    label:"State House District", border:"#a04000" },
+    field:"DISTRICT", label:"State House District", border:"#a04000" },
+  { key:"county", file:"Maine_Counties.geojson",
+    field:"NAME", label:"County", border:"#3e6b4f", isName:true },
 ];
 
 const HIGHLIGHT_FILL = "#D04416";      // deeper Maine Monitor orange — neutral, non-partisan
@@ -470,12 +475,13 @@ function styleFor(cfg, districtValue, highlightValue) {
 
 function buildLayer(cfg, gj){
   if (drawn[cfg.key]) return drawn[cfg.key];
+  const field = cfg.field || DISTRICT_FIELD;
   drawn[cfg.key] = L.geoJSON(gj, {
-    style: f => styleFor(cfg, f.properties[DISTRICT_FIELD], highlighted[cfg.key]),
+    style: f => styleFor(cfg, f.properties[field], highlighted[cfg.key]),
     onEachFeature: (f, lyr) => {
       lyr.on("mouseover", () => lyr.setStyle({ weight: 4 }));
       lyr.on("mouseout", () =>
-        lyr.setStyle(styleFor(cfg, lyr.feature.properties[DISTRICT_FIELD], highlighted[cfg.key])));
+        lyr.setStyle(styleFor(cfg, lyr.feature.properties[field], highlighted[cfg.key])));
     }
   });
   return drawn[cfg.key];
@@ -484,8 +490,9 @@ function buildLayer(cfg, gj){
 function refreshLayerStyle(cfg){
   const layer = drawn[cfg.key];
   if (!layer) return;
+  const field = cfg.field || DISTRICT_FIELD;
   layer.eachLayer(lyr =>
-    lyr.setStyle(styleFor(cfg, lyr.feature.properties[DISTRICT_FIELD], highlighted[cfg.key])));
+    lyr.setStyle(styleFor(cfg, lyr.feature.properties[field], highlighted[cfg.key])));
 }
 
 // ── Map tabs: show exactly one district layer at a time ─────────────────────
@@ -537,19 +544,21 @@ async function geocode(address){
            display_name: short || data[0].display_name };
 }
 
-function districtAt(gj, lon, lat){
+function districtAt(gj, lon, lat, field){
+  field = field || DISTRICT_FIELD;
   const pt = turf.point([lon, lat]);
   for (const f of gj.features) {
-    if (turf.booleanPointInPolygon(pt, f)) return String(f.properties[DISTRICT_FIELD]);
+    if (turf.booleanPointInPolygon(pt, f)) return String(f.properties[field]);
   }
   return null;
 }
 
-// Bounds of the matched district (of the given layer) so we can frame it.
-function districtBounds(gj, districtValue){
+// Bounds of the matched area (of the given layer) so we can frame it.
+function districtBounds(gj, districtValue, field){
   if (districtValue == null) return null;
+  field = field || DISTRICT_FIELD;
   const feats = gj.features.filter(f =>
-    String(f.properties[DISTRICT_FIELD]) === String(districtValue));
+    String(f.properties[field]) === String(districtValue));
   if (!feats.length) return null;
   return L.geoJSON({ type: "FeatureCollection", features: feats }).getBounds();
 }
@@ -560,7 +569,7 @@ function districtBounds(gj, districtValue){
 function frameActiveDistrict(reveal){
   const cfg = LAYERS.find(l => l.key === activeLayerKey);
   const gj = cfg && geojsonCache[cfg.file];
-  const b = gj && districtBounds(gj, highlighted[activeLayerKey]);
+  const b = gj && districtBounds(gj, highlighted[activeLayerKey], cfg && cfg.field);
   if (!(b && b.isValid())) return;
   // maxZoom is the cap, not the target: fitBounds only zooms as far as needed to
   // fit the district, so a large district still sits low while a tiny one is now
@@ -574,12 +583,16 @@ function frameActiveDistrict(reveal){
   }
 }
 
-// ── District readout: the three districts, spaced across one line ───────────
+// ── District readout: the districts + county, spaced across one line ─────────
 function renderResult(displayName, values) {
   const found = LAYERS.filter(c => values[c.key] != null);
   const body = found.length
-    ? found.map(c =>
-        `<span class="dist-item">${esc(c.label)} <b>${esc(values[c.key])}</b></span>`).join("")
+    ? found.map(c => {
+        const v = esc(values[c.key]);
+        // County value already reads "Cumberland County" — don't prefix a label.
+        const text = c.isName ? `<b>${v}</b>` : `${esc(c.label)} <b>${v}</b>`;
+        return `<span class="dist-item">${text}</span>`;
+      }).join("")
     : `<span class="dist-item">No Maine districts matched this address.</span>`;
   document.getElementById("result_box").innerHTML = `
     <div class="lede-addr">${esc(displayName)}</div>
@@ -677,7 +690,7 @@ async function runLookup(preGeo){
     const values = {};
     for (const cfg of LAYERS) {
       const gj = await loadGeojson(cfg.file);
-      values[cfg.key] = districtAt(gj, geo.lon, geo.lat);
+      values[cfg.key] = districtAt(gj, geo.lon, geo.lat, cfg.field);
       highlighted[cfg.key] = values[cfg.key];
       buildLayer(cfg, gj);
       refreshLayerStyle(cfg);

@@ -1,5 +1,18 @@
 {
-  "governor": [],
+  "governor": [
+    {
+      "name": "Hannah Pingree",
+      "party": "D"
+    },
+    {
+      "name": "Robert Charles",
+      "party": "R"
+    },
+    {
+      "name": "Richard Bennett",
+      "party": "I"
+    }
+  ],
   "us_senate": [
     {
       "name": "Susan Collins",

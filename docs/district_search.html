@@ -636,16 +636,20 @@ function repRow(rep){
 // One race as its own titled section: a header naming the office (and district)
 // with a single voter-guide link, then everyone running in it — so it reads as
 // who is up against whom. Grouped so the active map tab can highlight the race.
-function raceSection(layer, raceLabel, district){
+function raceSection(layer, raceLabel, district, opts){
+  opts = opts || {};
   const heading = district != null ? `${raceLabel} · District ${district}` : raceLabel;
   const href = (RESULT_LINK[layer] || (() => null))(district, null);
   const link = href
     ? `<a class="race-link" href="${esc(href)}" target="_blank" rel="noopener">${RESULT_ACTION_LABEL}</a>`
     : "";
   const reps = repsFor(layer, district);
+  // A placeholder race (e.g. Governor before candidates are entered) shows just
+  // its header + voter-guide link; other empty races flag the gap explicitly.
   const rows = reps.length
     ? reps.map(repRow).join("")
-    : `<div class="rep-row is-empty"><div><span class="rep-name">No candidate listed</span></div></div>`;
+    : (opts.placeholder ? ""
+       : `<div class="rep-row is-empty"><div><span class="rep-name">No candidate listed</span></div></div>`);
   return `<div class="rep-group" data-office="${esc(layer)}">
       <div class="rep-kicker rep-kicker-row"><span>${esc(heading)}</span>${link}</div>
       ${rows}
@@ -653,17 +657,14 @@ function raceSection(layer, raceLabel, district){
 }
 
 function renderRepresentatives(values){
-  const sections = [];
-  // Governor is statewide; it appears once candidates are added to reps.json.
-  if (REPS && REPS.governor && REPS.governor.length)
-    sections.push(raceSection("governor", "Governor", null));
-  sections.push(
+  document.getElementById("rep_box").innerHTML = [
+    // Governor is statewide; header + voter-guide link show now, candidates fill in later.
+    raceSection("governor", "Governor", null, { placeholder: true }),
     raceSection("state_senate",  "State Senate", values.state_senate),
     raceSection("state_house",   "State House",  values.state_house),
     raceSection("us_senate",     "U.S. Senate",  null),
     raceSection("congressional", "U.S. House",   values.congressional),
-  );
-  document.getElementById("rep_box").innerHTML = sections.join("");
+  ].join("");
   syncRepHighlight();
 }
 

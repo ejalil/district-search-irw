@@ -171,7 +171,9 @@
     display: flex; gap: 44px; align-items: flex-start; margin-top: 36px;
   }
   .map-col, .rep-col { flex: 1 1 50%; min-width: 0; }
-  #map { height: 540px; width: 100%; border-radius: 4px; border: 1px solid var(--border); }
+  /* No base tiles — plain background behind the districts/counties. */
+  #map { height: 540px; width: 100%; border-radius: 4px; border: 1px solid var(--border); background: #e9e9ef; }
+  :root[data-scheme="dark"] #map { background: #141414; }
   .leaflet-container { font: inherit; }
   /* Keep keyboard focus visible; only suppress the mouse-click ring. */
   :focus:not(:focus-visible) { outline: none; }
@@ -382,24 +384,23 @@ const HIGHLIGHT_FILL = "#D04416";      // deeper Maine Monitor orange — neutra
 const HIGHLIGHT_BORDER = "#9c320d";
 const DEFAULT_FILL = "#d9d9d9";
 
-// ── Map setup (CartoDB Positron) ─────────────────────────────────────────────
+// ── Map setup ────────────────────────────────────────────────────────────────
+// No third-party base tiles: districts/counties sit on a plain background (no
+// tile attribution, nothing loaded from CARTO). We still add ONE tile layer —
+// a transparent 1×1 tile — because Leaflet expects a base layer to initialise
+// its projection cleanly; a truly layerless map throws during fitBounds.
 // zoomSnap 0.25 lets fitBounds pick a fractional zoom, so Maine fills the frame.
 // scrollWheelZoom off: scrolling the article past the embed must not zoom the
 // map. On phones, one-finger drag is off too (so the map can't hijack page
 // scrolling) — pinch-zoom and the +/- buttons still work.
-const map = L.map("map", { minZoom: 6, zoomSnap: 0.25, scrollWheelZoom: false }).setView([45.25, -69.0], 6);
+const map = L.map("map", { minZoom: 6, zoomSnap: 0.25, scrollWheelZoom: false,
+  attributionControl: false }).setView([45.25, -69.0], 6);
 if (L.Browser.mobile) map.dragging.disable();
 
-// Dark mode mirrors the finance pages: data-scheme is set (in <head>) from
-// ?theme= or the OS preference; keep the tiles/mask/marker in step with it.
-const CARTO = {
-  light: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-  dark:  "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-};
+// data-scheme (set in <head> from ?theme= or the OS) drives the mask/marker colors.
 let isDark = document.documentElement.getAttribute("data-scheme") === "dark";
-const basemapLayer = L.tileLayer(isDark ? CARTO.dark : CARTO.light, {
-  attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 30
-}).addTo(map);
+const BLANK_TILE = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+const basemapLayer = L.tileLayer(BLANK_TILE, { maxZoom: 30 }).addTo(map);
 
 let marker = null;
 let maskLayer = null;
@@ -456,7 +457,6 @@ function markerStyle(){
 function applyScheme(dark){
   isDark = dark;
   document.documentElement.setAttribute("data-scheme", dark ? "dark" : "light");
-  basemapLayer.setUrl(dark ? CARTO.dark : CARTO.light);
   if (maskLayer) maskLayer.setStyle({ fillColor: dark ? "#141414" : "#e9e9ef" });
   if (maineOutlineLayer) maineOutlineLayer.setStyle({ color: dark ? "#555" : "#999" });
   if (marker) marker.setStyle(markerStyle());

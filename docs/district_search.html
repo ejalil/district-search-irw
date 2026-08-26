@@ -775,7 +775,13 @@ async function fetchSuggestions(q){
   const url = "https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=8"
             + "&countrycodes=us&viewbox=" + MAINE_VIEWBOX + "&bounded=1&q=" + encodeURIComponent(q);
   const resp = await fetch(url, { headers: { Accept: "application/json" }, signal: suggController.signal });
-  if (!resp.ok) return [];
+  if (!resp.ok) {
+    // Surface throttling/blocking instead of silently showing no matches — a 429
+    // means the OpenStreetMap geocoder is rate-limiting this IP for a moment.
+    console.warn("Address suggestions unavailable — Nominatim returned HTTP " + resp.status +
+                 (resp.status === 429 ? " (rate limited; wait a few seconds)" : ""));
+    return [];
+  }
   const data = await resp.json();
   // Nominatim can return the same place more than once (different OSM records at
   // the same address); collapse by the display string so the list has no dupes.
@@ -801,7 +807,7 @@ addressEl.addEventListener("input", () => {
   if (q.length < 4) { closeSuggestions(); return; }
   suggTimer = setTimeout(async () => {
     try { renderSuggestions(await fetchSuggestions(q)); }
-    catch (e) { if (e.name !== "AbortError") closeSuggestions(); }
+    catch (e) { if (e.name !== "AbortError") { console.warn("Address suggestions error:", e); closeSuggestions(); } }
   }, 350);
 });
 

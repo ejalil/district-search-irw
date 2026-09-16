@@ -262,6 +262,13 @@
     font-size: 0.74rem; font-weight: 400; color: var(--text-muted);
     white-space: nowrap; flex: 0 0 auto;
   }
+  /* County section: several offices under one county header, each office a
+     small sub-label above its candidates. */
+  .county-race { margin-top: 6px; }
+  .county-office {
+    font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);
+    margin: 10px 0 0;
+  }
   /* Race header carries the one voter-guide link: label left, link right. */
   .rep-kicker-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
   .race-link {
@@ -355,6 +362,7 @@ const RESULT_LINK = {
                          : d === "2" ? MM + "2nd-congressional-elections/" : null,
   state_senate:  (d, r) => MM + "senate-district-" + d + "-elections/",
   state_house:   (d, r) => MM + "house-district-"  + d + "-elections/",
+  county:        (name)  => MM + String(name).toLowerCase().replace(/ /g, "-") + "-voter-guide/",
 };
 
 // Party code → display label + brand color (matches the finance pages).
@@ -665,12 +673,34 @@ function raceSection(layer, raceLabel, district, opts){
     </div>`;
 }
 
+// County: one section per county holding several offices (Sheriff, DA, Judge of
+// Probate, Commissioner by sub-district, …). The tool resolves the county name
+// but not commissioner sub-districts, so commissioners are listed with their
+// District label; one county voter-guide link covers them all.
+function countySection(countyName){
+  if (!countyName) return "";
+  const races = (REPS.county && REPS.county[countyName]) || [];
+  const href = RESULT_LINK.county(countyName);
+  const link = `<a class="race-link" href="${esc(href)}" target="_blank" rel="noopener">${RESULT_ACTION_LABEL}</a>`;
+  const body = races.length
+    ? races.map(r => {
+        const label = r.office + (r.district ? " · District " + r.district : "");
+        return `<div class="county-race"><div class="county-office">${esc(label)}</div>${r.candidates.map(repRow).join("")}</div>`;
+      }).join("")
+    : `<div class="rep-row is-empty"><div><span class="rep-name">See the county voter guide for candidates</span></div></div>`;
+  return `<div class="rep-group" data-office="county">
+      <div class="rep-kicker rep-kicker-row"><span>County · ${esc(countyName)}</span>${link}</div>
+      ${body}
+    </div>`;
+}
+
 function renderRepresentatives(values){
   document.getElementById("rep_box").innerHTML = [
     // Governor is statewide; header + voter-guide link show now, candidates fill in later.
     raceSection("governor", "Governor", null, { placeholder: true }),
     raceSection("state_senate",  "State Senate", values.state_senate),
     raceSection("state_house",   "State House",  values.state_house),
+    countySection(values.county),
     raceSection("us_senate",     "U.S. Senate",  null),
     raceSection("congressional", "U.S. House",   values.congressional),
   ].join("");

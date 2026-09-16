@@ -1842,5 +1842,966 @@
         "party": "R"
       }
     ]
+  },
+  "county": {
+    "Androscoggin County": [
+      {
+        "office": "Sheriff",
+        "candidates": [
+          {
+            "name": "Eric Samson",
+            "party": "D"
+          },
+          {
+            "name": "Kevin Nichols",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Neil McLean Jr.",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Judge of Probate",
+        "candidates": [
+          {
+            "name": "Michael Dubois",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "2",
+        "candidates": [
+          {
+            "name": "Roland Poirier",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "3",
+        "candidates": [
+          {
+            "name": "Glenn Chateauvert",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "5",
+        "candidates": [
+          {
+            "name": "Gordon Bell",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "7",
+        "candidates": [
+          {
+            "name": "Coreene Baumann",
+            "party": "R"
+          },
+          {
+            "name": "Lisa Cesare",
+            "party": "D"
+          }
+        ]
+      }
+    ],
+    "Aroostook County": [
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Kari Wells-Puckett",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds (North)",
+        "candidates": [
+          {
+            "name": "Amy Ouellette",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds (South)",
+        "candidates": [
+          {
+            "name": "Melissa Richardson",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Treasurer",
+        "candidates": [
+          {
+            "name": "Leigh Smith",
+            "party": "R",
+            "writeIn": true
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "1",
+        "candidates": [
+          {
+            "name": "William Dobbins",
+            "party": "R"
+          },
+          {
+            "name": "Diane Langworthy",
+            "party": "D",
+            "writeIn": true
+          }
+        ]
+      }
+    ],
+    "Cumberland County": [
+      {
+        "office": "Sheriff",
+        "candidates": [
+          {
+            "name": "Kevin Joyce",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Stephanie Anderson",
+            "party": "I"
+          },
+          {
+            "name": "Jacqueline Sartoris",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Judge of Probate",
+        "candidates": [
+          {
+            "name": "Paul Aranson",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "3",
+        "candidates": [
+          {
+            "name": "Amy Leshure",
+            "party": "D"
+          },
+          {
+            "name": "Robert Vail",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "4",
+        "candidates": [
+          {
+            "name": "Patricia Smith",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "5",
+        "candidates": [
+          {
+            "name": "Marpheen Chann",
+            "party": "D"
+          }
+        ]
+      }
+    ],
+    "Franklin County": [
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Neil McLean Jr.",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Judge of Probate",
+        "candidates": [
+          {
+            "name": "Margot Joly",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds",
+        "candidates": [
+          {
+            "name": "Susan Black",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Treasurer",
+        "candidates": [
+          {
+            "name": "Pamela Prodan",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "4",
+        "candidates": [
+          {
+            "name": "Earl Ireland",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "5",
+        "candidates": [
+          {
+            "name": "Jeffrey Gilbert",
+            "party": "R"
+          },
+          {
+            "name": "Gary McGrane",
+            "party": "D"
+          }
+        ]
+      }
+    ],
+    "Hancock County": [
+      {
+        "office": "Sheriff",
+        "candidates": [
+          {
+            "name": "Corey Bagley",
+            "party": "R"
+          },
+          {
+            "name": "Dakota Dupuis",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Robert Granger",
+            "party": "I"
+          },
+          {
+            "name": "Steven Juskewitch",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "Judge of Probate",
+        "candidates": [
+          {
+            "name": "Matthew Foster",
+            "party": "R"
+          },
+          {
+            "name": "Brian Thomas",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds",
+        "candidates": [
+          {
+            "name": "Julie Curtis",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Treasurer",
+        "candidates": [
+          {
+            "name": "Monica Cease",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "2",
+        "candidates": [
+          {
+            "name": "John Wombacher",
+            "party": "D"
+          }
+        ]
+      }
+    ],
+    "Kennebec County": [
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Maeghan Maloney",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds",
+        "candidates": [
+          {
+            "name": "Matthew Boucher",
+            "party": "R"
+          },
+          {
+            "name": "Kevin Lamoreau",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Treasurer",
+        "candidates": [
+          {
+            "name": "Joanne Mason",
+            "party": "D"
+          },
+          {
+            "name": "Monte Sylvester",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "2",
+        "candidates": [
+          {
+            "name": "Noel Madore",
+            "party": "D"
+          },
+          {
+            "name": "Joseph Pietroski",
+            "party": "R"
+          }
+        ]
+      }
+    ],
+    "Knox County": [
+      {
+        "office": "Sheriff",
+        "candidates": [
+          {
+            "name": "Patrick Polky",
+            "party": "D"
+          },
+          {
+            "name": "Albert Joy",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Natasha Irving",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Judge of Probate",
+        "candidates": [
+          {
+            "name": "Carol Emery",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "1",
+        "candidates": [
+          {
+            "name": "Edward Glaser",
+            "party": "D"
+          }
+        ]
+      }
+    ],
+    "Lincoln County": [
+      {
+        "office": "Sheriff",
+        "candidates": [
+          {
+            "name": "Todd Brackett",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Natasha Irving",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Register of Probate",
+        "candidates": [
+          {
+            "name": "Catherine Moore",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds",
+        "candidates": [
+          {
+            "name": "Rebecca Wotton",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Treasurer",
+        "candidates": [
+          {
+            "name": "Michelle Kane",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "2",
+        "candidates": [
+          {
+            "name": "Walter Voskian",
+            "party": "D"
+          }
+        ]
+      }
+    ],
+    "Oxford County": [
+      {
+        "office": "Sheriff",
+        "candidates": [
+          {
+            "name": "Timothy Holland",
+            "party": "D"
+          },
+          {
+            "name": "Justin Brown",
+            "party": "I"
+          },
+          {
+            "name": "Christopher Wainwright",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Neil McLean Jr.",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds",
+        "candidates": [
+          {
+            "name": "Cherri Crockett",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Treasurer",
+        "candidates": [
+          {
+            "name": "Christopher Davis",
+            "party": "R"
+          },
+          {
+            "name": "Savannah Sessions",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "3",
+        "candidates": [
+          {
+            "name": "Lloyd Herrick",
+            "party": "R"
+          },
+          {
+            "name": "Janet Jamison",
+            "party": "D"
+          }
+        ]
+      }
+    ],
+    "Penobscot County": [
+      {
+        "office": "Sheriff",
+        "candidates": [
+          {
+            "name": "Troy Morton",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Chelsea Lynds",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Judge of Probate",
+        "candidates": [
+          {
+            "name": "Beth Seaney",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds",
+        "candidates": [
+          {
+            "name": "Susan Bulay",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Treasurer",
+        "candidates": [
+          {
+            "name": "Glenn Mower",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "3",
+        "candidates": [
+          {
+            "name": "David Marshall",
+            "party": "R"
+          }
+        ]
+      }
+    ],
+    "Piscataquis County": [
+      {
+        "office": "Sheriff",
+        "candidates": [
+          {
+            "name": "Guy Dow",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Chelsea Lynds",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Register of Probate",
+        "candidates": [
+          {
+            "name": "Corey Pearson",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds",
+        "candidates": [
+          {
+            "name": "Gail Clark",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Treasurer",
+        "candidates": [
+          {
+            "name": "Johanna Turner",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "1",
+        "candidates": [
+          {
+            "name": "Paul Davis Sr.",
+            "party": "R"
+          },
+          {
+            "name": "Paul Zimmerman",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "3",
+        "candidates": [
+          {
+            "name": "Adam Coover",
+            "party": "R"
+          }
+        ]
+      }
+    ],
+    "Somerset County": [
+      {
+        "office": "Sheriff",
+        "candidates": [
+          {
+            "name": "Dale Lancaster",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Maeghan Maloney",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds",
+        "candidates": [
+          {
+            "name": "Tanya Belanger",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "Treasurer",
+        "candidates": [
+          {
+            "name": "Tracey Rotondi",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "2",
+        "candidates": [
+          {
+            "name": "Donald Skillings",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "3",
+        "candidates": [
+          {
+            "name": "Scott Seekins",
+            "party": "I",
+            "writeIn": true
+          },
+          {
+            "name": "Stanley Short Jr.",
+            "party": "I",
+            "writeIn": true
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "4",
+        "candidates": [
+          {
+            "name": "John Alsop",
+            "party": "I"
+          },
+          {
+            "name": "Cyprien Johnson",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "5",
+        "candidates": [
+          {
+            "name": "Larry Dunphy",
+            "party": "I"
+          }
+        ]
+      }
+    ],
+    "Waldo County": [
+      {
+        "office": "Sheriff",
+        "candidates": [
+          {
+            "name": "Jason Trundy",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Natasha Irving",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds",
+        "candidates": [
+          {
+            "name": "Stacy Grant",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Treasurer",
+        "candidates": [
+          {
+            "name": "Owen Smith",
+            "party": "D",
+            "writeIn": true
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "1",
+        "candidates": [
+          {
+            "name": "Breanna Pinkham Bebb",
+            "party": "D"
+          },
+          {
+            "name": "Alphonzo Wagner III",
+            "party": "R"
+          }
+        ]
+      }
+    ],
+    "Washington County": [
+      {
+        "office": "Sheriff",
+        "candidates": [
+          {
+            "name": "Michael Crabtree",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Robert Granger",
+            "party": "I"
+          },
+          {
+            "name": "Steven Juskewitch",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "Judge of Probate",
+        "candidates": [
+          {
+            "name": "Dennis Mahar",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Register of Probate",
+        "candidates": [
+          {
+            "name": "Darlene Perry",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds",
+        "candidates": [
+          {
+            "name": "Tammy Gay",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Treasurer",
+        "candidates": [
+          {
+            "name": "No candidates",
+            "party": ""
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "3",
+        "candidates": [
+          {
+            "name": "Courtney Hammond",
+            "party": "R"
+          }
+        ]
+      }
+    ],
+    "York County": [
+      {
+        "office": "Sheriff",
+        "candidates": [
+          {
+            "name": "David Corbett",
+            "party": "R"
+          },
+          {
+            "name": "William King Jr.",
+            "party": "D"
+          },
+          {
+            "name": "Brian Pellerin",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Kathryn Slattery",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds",
+        "candidates": [
+          {
+            "name": "Wendy Caiazzo",
+            "party": "I"
+          }
+        ]
+      },
+      {
+        "office": "Treasurer",
+        "candidates": [
+          {
+            "name": "Bobby Mills",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "1",
+        "candidates": [
+          {
+            "name": "Robert Andrews",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "2",
+        "candidates": [
+          {
+            "name": "Doris Ortiz",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "3",
+        "candidates": [
+          {
+            "name": "Justin Chenette",
+            "party": "D"
+          }
+        ]
+      }
+    ]
   }
 }

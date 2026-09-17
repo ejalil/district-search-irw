@@ -166,11 +166,17 @@
   .notice-lead { font-size: 1.05rem; color: var(--text); }
   .notice-hint { margin-top: 4px; font-size: 0.9rem; color: var(--text-muted); text-wrap: balance; }
 
-  /* ── TWO-COLUMN: map | representatives ── */
+  /* ── STACKED: candidate list on top, map underneath (both desktop + mobile) ── */
   .page-flex {
-    display: flex; gap: 44px; align-items: flex-start; margin-top: 36px;
+    display: flex; flex-direction: column; gap: 32px; margin-top: 36px;
   }
-  .map-col, .rep-col { flex: 1 1 50%; min-width: 0; }
+  .map-col, .rep-col { width: 100%; min-width: 0; }
+  /* The list is a two-up grid of section cards on desktop; sections flow
+     row-major, so DOM order sets the pairs (see renderRepresentatives). */
+  #rep_box {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 18px; align-items: start; margin-top: 14px;
+  }
   /* No base tiles — plain background behind the districts/counties. */
   #map { height: 540px; width: 100%; border-radius: 4px; border: 1px solid var(--border); background: #e9e9ef; }
   :root[data-scheme="dark"] #map { background: #141414; }
@@ -221,26 +227,28 @@
     background: linear-gradient(to right, var(--mm-orange), transparent); margin-top: 4px;
   }
 
-  /* ── REPRESENTATIVES: a ruled newspaper list, not cards ── */
+  /* ── REPRESENTATIVES: each office is its own clearly-bounded section card ── */
   .rep-kicker {
     font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
-    color: var(--text-muted); margin: 26px 0 2px;
+    color: var(--text-muted); margin: 6px 0 4px;
   }
-  .rep-kicker:first-of-type { margin-top: 18px; }
   .rep-hint { color: var(--text-muted); font-size: 0.9rem; padding: 22px 2px; }
-  /* Each office's candidates are grouped so the one shown on the map (the active
-     tab) can be called out — connecting "State Senate" on the map to the State
-     Senate candidates in the list. A soft full-width wash, keyed to the same
-     orange the map shades the district with — no accent bar, so it reads as a
-     highlighted passage rather than a UI card. */
+  /* Each office's candidates are one card, so a reader scrolling sees exactly
+     where a section starts and ends. The active map tab tints its card and warms
+     the border, tying "State Senate" on the map to the State Senate section. */
   .rep-group {
-    margin: 0 -14px; padding: 2px 14px; border-radius: 3px;
-    transition: background .15s;
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 18px 12px; background: var(--bg);
+    transition: background .15s, border-color .15s;
   }
-  .rep-group.active-office { background: var(--office-tint); }
+  .rep-group.active-office { background: var(--office-tint); border-color: var(--mm-orange); }
+  /* One row rhythm everywhere; no trailing hairline against a card's / office's
+     bottom padding. */
+  .rep-group .rep-row:last-child,
+  .county-race .rep-row:last-child { border-bottom: 0; }
   .rep-row {
     display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
-    padding: 16px 2px; border-bottom: 1px solid var(--border);
+    padding: 10px 2px; border-bottom: 1px solid var(--border);
     text-decoration: none; color: inherit;
   }
   .rep-name {
@@ -262,12 +270,15 @@
     font-size: 0.74rem; font-weight: 400; color: var(--text-muted);
     white-space: nowrap; flex: 0 0 auto;
   }
-  /* County section: several offices under one county header, each office a
-     small sub-label above its candidates. */
-  .county-race { margin-top: 6px; }
+  /* County box holds several offices. Each office is a compact block: an
+     uppercase sub-label (same language as the section kickers) over tight
+     candidate rows, with a hairline between offices so the many races in a
+     county read as an orderly list rather than a wall of text. */
+  .county-race { padding-top: 10px; margin-top: 10px; border-top: 1px solid var(--border); }
+  .county-race:first-child { padding-top: 2px; margin-top: 2px; border-top: 0; }
   .county-office {
-    font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);
-    margin: 10px 0 0;
+    font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.1px;
+    color: var(--text-muted); margin: 0 0 4px;
   }
   /* Race header carries the one voter-guide link: label left, link right. */
   .rep-kicker-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
@@ -279,9 +290,7 @@
   .rep-row.is-empty .rep-name { color: var(--text-muted); font-weight: 400; font-style: italic; }
 
   @media (max-width: 820px) {
-    .page-flex { flex-direction: column; gap: 36px; }
-    .map-col, .rep-col { flex: 1 1 100%; width: 100%; }
-    .rep-col { order: -1; }        /* the names are the payoff — map comes second */
+    #rep_box { grid-template-columns: 1fr; }   /* one section per row on phones */
     #map { height: 380px; }
     .lede-districts { font-size: 1.15rem; }
     .map-tabs { gap: 16px; }
@@ -316,6 +325,11 @@
   <div id="result_box"></div>
 
   <div class="page-flex" id="results">
+    <div class="rep-col">
+      <!-- Heading language pending Kate/Stephanie approval — placeholder for now. -->
+      <div class="ribbon"><span class="ribbon-text">Candidates on Your Ballot</span></div>
+      <div id="rep_box"></div>
+    </div>
     <div class="map-col">
       <div class="map-tabs" id="map_tabs">
         <button data-layer="congressional" class="active">U.S. House</button>
@@ -324,11 +338,6 @@
         <button data-layer="county">County</button>
       </div>
       <div id="map"></div>
-    </div>
-    <div class="rep-col">
-      <!-- Heading language pending Kate/Stephanie approval — placeholder for now. -->
-      <div class="ribbon"><span class="ribbon-text">Candidates on Your Ballot</span></div>
-      <div id="rep_box"></div>
     </div>
   </div>
 
@@ -695,14 +704,15 @@ function countySection(countyName){
 }
 
 function renderRepresentatives(values){
+  // Order sets the two-up grid (row-major): row1 House|Senate, row2 Gov|US House,
+  // row3 US Senate|County. Governor shows header + link now, candidates later.
   document.getElementById("rep_box").innerHTML = [
-    // Governor is statewide; header + voter-guide link show now, candidates fill in later.
-    raceSection("governor", "Governor", null, { placeholder: true }),
-    raceSection("state_senate",  "State Senate", values.state_senate),
     raceSection("state_house",   "State House",  values.state_house),
-    countySection(values.county),
-    raceSection("us_senate",     "U.S. Senate",  null),
+    raceSection("state_senate",  "State Senate", values.state_senate),
+    raceSection("governor", "Governor", null, { placeholder: true }),
     raceSection("congressional", "U.S. House",   values.congressional),
+    raceSection("us_senate",     "U.S. Senate",  null),
+    countySection(values.county),
   ].join("");
   syncRepHighlight();
 }

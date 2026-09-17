@@ -234,14 +234,11 @@
   }
   .rep-hint { color: var(--text-muted); font-size: 0.9rem; padding: 22px 2px; }
   /* Each office's candidates are one card, so a reader scrolling sees exactly
-     where a section starts and ends. The active map tab tints its card and warms
-     the border, tying "State Senate" on the map to the State Senate section. */
+     where a section starts and ends. */
   .rep-group {
     border: 1px solid var(--border); border-radius: 8px;
     padding: 8px 18px 12px; background: var(--bg);
-    transition: background .15s, border-color .15s;
   }
-  .rep-group.active-office { background: var(--office-tint); border-color: var(--mm-orange); }
   /* One row rhythm everywhere; no trailing hairline against a card's / office's
      bottom padding. */
   .rep-group .rep-row:last-child,

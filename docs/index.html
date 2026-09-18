@@ -347,7 +347,7 @@
   </div>
 
   <footer class="pagefoot">
-    <p class="sources">District boundaries sourced from the Maine GeoLibrary, based on the redistricting that followed the 2020 Census: <a href="https://maine.hub.arcgis.com/datasets/0e4a31b61b714ba08a3e9b3c2b752d77_3" target="_blank" rel="noopener">U.S. House</a>, <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-senate" target="_blank" rel="noopener">State Senate</a> and <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-house" target="_blank" rel="noopener">State House</a>. County boundaries are from the <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html" target="_blank" rel="noopener">U.S. Census Bureau</a>. Addresses are based on streets registered with <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a>.</p>
+    <p class="sources">District boundaries sourced from the Maine GeoLibrary, based on the redistricting that followed the 2020 Census: <a href="https://maine.hub.arcgis.com/datasets/0e4a31b61b714ba08a3e9b3c2b752d77_3" target="_blank" rel="noopener">U.S. House</a>, <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-senate" target="_blank" rel="noopener">State Senate</a> and <a href="https://maine.hub.arcgis.com/datasets/maine::maine-voting-districts-2021-state-house" target="_blank" rel="noopener">State House</a>, plus <a href="https://mainegeolibrary-maine.hub.arcgis.com/datasets/0d9bf16c70294d31a54de55b6d012b57_0" target="_blank" rel="noopener">county commissioner districts</a> (with <a href="https://www.arcgis.com/home/item.html?id=ffc9f8a54a4c4240ac89bc63781d7b95" target="_blank" rel="noopener">Franklin County’s 2024 update</a>). County boundaries are from the <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html" target="_blank" rel="noopener">U.S. Census Bureau</a>. Addresses are based on streets registered with <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a>.</p>
     <p class="credit">Developed in partnership with Ela Jalil and Aarushi Sahejpal of the Investigative Reporting Workshop, a nonprofit newsroom based at American University.</p>
   </footer>
 
@@ -581,6 +581,19 @@ function districtAt(gj, lon, lat, field){
   return null;
 }
 
+// County commissioners are elected by district within each county, so a voter
+// only has the commissioner race for their own district on the ballot.
+// Boundaries: Maine GeoLibrary 2021 commissioner districts, with Franklin
+// County swapped for its 2024 redraw. Only the voter's county is tested.
+const COMMISSIONER_FILE = "Maine_County_Commissioner_Districts.geojson";
+function commissionerDistrictAt(gj, lon, lat, county){
+  const pt = turf.point([lon, lat]);
+  for (const f of gj.features) {
+    if (f.properties.COUNTY === county && turf.booleanPointInPolygon(pt, f)) return String(f.properties.DISTRICT);
+  }
+  return null;
+}
+
 // Bounds of the matched area (of the given layer) so we can frame it.
 function districtBounds(gj, districtValue, field){
   if (districtValue == null) return null;
@@ -688,12 +701,14 @@ function raceSection(layer, raceLabel, district, opts){
 }
 
 // County: one section per county holding several offices (Sheriff, DA, Judge of
-// Probate, Commissioner by sub-district, …). The tool resolves the county name
-// but not commissioner sub-districts, so commissioners are listed with their
-// District label; one county voter-guide link covers them all.
-function countySection(countyName){
+// Probate, County Commissioner, …); one county voter-guide link covers them all.
+function countySection(countyName, commissionerDistrict){
   if (!countyName) return "";
-  const races = (REPS.county && REPS.county[countyName]) || [];
+  // Keep only the commissioner race for the voter's own district. If the
+  // district couldn't be resolved, list every seat (each is labeled by district).
+  const races = ((REPS.county && REPS.county[countyName]) || []).filter(r =>
+    r.office !== "County Commissioner" || commissionerDistrict == null ||
+    String(r.district) === String(commissionerDistrict));
   const href = RESULT_LINK.county(countyName);
   const link = `<a class="race-link" href="${esc(href)}" target="_blank" rel="noopener">${RESULT_ACTION_LABEL}</a>`;
   const body = races.length
@@ -717,7 +732,7 @@ function renderRepresentatives(values){
     raceSection("governor", "Governor", null, { placeholder: true }),
     raceSection("congressional", "U.S. House",   values.congressional),
     raceSection("us_senate",     "U.S. Senate",  null),
-    countySection(values.county),
+    countySection(values.county, values.commissioner),
   ].join("");
   syncRepHighlight();
 }
@@ -749,6 +764,14 @@ async function runLookup(preGeo){
       highlighted[cfg.key] = values[cfg.key];
       buildLayer(cfg, gj);
       refreshLayerStyle(cfg);
+    }
+    // Which commissioner district (within the county) the address falls in.
+    // If this can't load, the county box falls back to listing every seat.
+    values.commissioner = null;
+    if (values.county) {
+      try {
+        values.commissioner = commissionerDistrictAt(await loadGeojson(COMMISSIONER_FILE), geo.lon, geo.lat, values.county);
+      } catch (err) { console.error("Could not load commissioner districts:", err); }
     }
     // Reveal the readout + results now, then size the map (it was display:none
     // until this first successful search, so Leaflet needs invalidateSize).

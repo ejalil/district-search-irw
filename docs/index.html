@@ -706,16 +706,25 @@ function countySection(countyName, commissionerDistrict){
   if (!countyName) return "";
   // Keep only the commissioner race for the voter's own district. If the
   // district couldn't be resolved, list every seat (each is labeled by district).
-  const races = ((REPS.county && REPS.county[countyName]) || []).filter(r =>
+  const all = (REPS.county && REPS.county[countyName]) || [];
+  const races = all.filter(r =>
     r.office !== "County Commissioner" || commissionerDistrict == null ||
     String(r.district) === String(commissionerDistrict));
+  // Seats are staggered: if this county has commissioner races but none in the
+  // voter's district, say so rather than leaving them wondering.
+  const offCycle = commissionerDistrict != null &&
+    all.some(r => r.office === "County Commissioner") &&
+    !races.some(r => r.office === "County Commissioner");
+  const offCycleNote = offCycle
+    ? `<div class="county-race"><div class="county-office">County Commissioner · District ${esc(commissionerDistrict)}</div><div class="rep-row is-empty"><div><span class="rep-name">No commissioner race in your district this year</span></div></div></div>`
+    : "";
   const href = RESULT_LINK.county(countyName);
   const link = `<a class="race-link" href="${esc(href)}" target="_blank" rel="noopener">${RESULT_ACTION_LABEL}</a>`;
   const body = races.length
     ? races.map(r => {
         const label = r.office + (r.district ? " · District " + r.district : "");
         return `<div class="county-race"><div class="county-office">${esc(label)}</div>${r.candidates.map(repRow).join("")}</div>`;
-      }).join("")
+      }).join("") + offCycleNote
     : `<div class="rep-row is-empty"><div><span class="rep-name">See the county voter guide for candidates</span></div></div>`;
   return `<div class="rep-group" data-office="county">
       <div class="rep-kicker rep-kicker-row"><span>County · ${esc(countyName)}</span>${link}</div>

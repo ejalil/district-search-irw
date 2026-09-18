@@ -2802,6 +2802,54 @@
           }
         ]
       }
+    ],
+    "Sagadahoc County": [
+      {
+        "office": "District Attorney",
+        "candidates": [
+          {
+            "name": "Natasha Irving",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Register of Probate",
+        "candidates": [
+          {
+            "name": "Donald Lawson-Stopps",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "Register of Deeds",
+        "candidates": [
+          {
+            "name": "Lynn Moore",
+            "party": "R"
+          }
+        ]
+      },
+      {
+        "office": "Treasurer",
+        "candidates": [
+          {
+            "name": "Gail Eaton",
+            "party": "D"
+          }
+        ]
+      },
+      {
+        "office": "County Commissioner",
+        "district": "2",
+        "candidates": [
+          {
+            "name": "Stephen August",
+            "party": "D"
+          }
+        ]
+      }
     ]
   }
 }

@@ -2498,10 +2498,6 @@
           {
             "name": "Paul Davis Sr.",
             "party": "R"
-          },
-          {
-            "name": "Paul Zimmerman",
-            "party": "R"
           }
         ]
       },
@@ -2732,7 +2728,8 @@
           },
           {
             "name": "Brian Pellerin",
-            "party": "I"
+            "party": "I",
+            "droppedOut": true
           }
         ]
       },

@@ -263,9 +263,9 @@
     font-size: 0.78rem; font-weight: 700; line-height: 1;
     color: #fff; background: var(--gray); flex: 0 0 auto;
   }
-  /* Small "Write-in" tag to the right of the party badge. Muted, regular weight
-     — a label, not emphasis; distinguishes write-ins that share a party icon. */
-  .rep-writein {
+  /* Small status tag to the right of the party badge ("Write-in", "Dropped
+     out"). Muted, regular weight — a label, not emphasis. */
+  .rep-writein, .rep-tag {
     font-size: 0.74rem; font-weight: 400; color: var(--text-muted);
     white-space: nowrap; flex: 0 0 auto;
   }
@@ -671,9 +671,12 @@ function repsFor(layer, district){
 function repRow(rep){
   const party = PARTY[rep.party] || { label: rep.party || "Unknown", color: "var(--gray)" };
   const letter = esc(party.abbr || (rep.party || "?").toUpperCase().slice(0, 1));
-  // Write-in candidates (rep.writeIn: true in reps.json) get a small label after
-  // the party badge.
-  const writein = rep.writeIn ? `<span class="rep-writein">Write-in</span>` : "";
+  // Status tags after the party badge: write-ins (rep.writeIn) and candidates
+  // who have dropped out but remain on the printed ballot (rep.droppedOut).
+  const writein = [
+    rep.writeIn ? `<span class="rep-tag">Write-in</span>` : "",
+    rep.droppedOut ? `<span class="rep-tag">Dropped out</span>` : "",
+  ].join("");
   return `<div class="rep-row"><div><div class="rep-headline"><span class="rep-name">${esc(rep.name)}</span><span class="rep-party" style="background:${party.color}" title="${esc(party.label)}" aria-label="${esc(party.label)}">${letter}</span>${writein}</div></div></div>`;
 }
 

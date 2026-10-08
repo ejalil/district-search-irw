@@ -541,7 +541,7 @@ async function showLayer(key){
 document.querySelectorAll("#map_tabs button[data-layer]").forEach(b =>
   b.addEventListener("click", () => showLayer(b.dataset.layer).then(frameActiveDistrict)));
 
-// ── Geocode (Nominatim) ──────────────────────────────────────────────────────
+// ── Geocode (Nominatim, with a Maine E911 fallback) ─────────────────────────
 // Apartment / unit designators trip up Nominatim (which geocodes to the street,
 // not the unit), so strip them. Handles "Apt 3", "Apt. 3", "Apartment 3",
 // "Unit 5", "Unit #5", "Ste 2", "Suite 2", and a bare "#4B" — common in autofill.
@@ -552,15 +552,54 @@ function stripUnit(s){
     .replace(/\s+,/g, ",").replace(/,\s*,/g, ",").replace(/\s{2,}/g, " ").trim();
 }
 
+// A street registered with the state can be missing from OpenStreetMap, or
+// carry a different suffix there ("Bachelder Road" vs "Drive"), so when
+// Nominatim finds nothing we fall back to Maine's authoritative E911 address
+// points. The street suffix is dropped from the match for that reason.
+const E911_URL = "https://services1.arcgis.com/RbMX0mRVOFNTdLzd/arcgis/rest/services/Maine_E911_Addresses_Feature/FeatureServer/0/query";
+const STREET_SUFFIX = /\b(rd|road|dr|drive|st|street|ave|avenue|ln|lane|way|ct|court|blvd|boulevard|ter|terrace|pl|place|cir|circle|hwy|highway|pkwy|parkway|loop|trl|trail|ext|extension)\.?\b/ig;
+const sqlEsc = s => String(s).replace(/'/g, "''");
+
+async function geocodeE911(address){
+  const raw = address.replace(/,?\s*\bmaine\b/ig, "").replace(/,?\s*\bME\b/g, "");
+  const zip = (raw.match(/\b(\d{5})\b/) || [])[1] || "";
+  const parts = raw.split(",").map(s => s.trim()).filter(Boolean);
+  const m = (parts[0] || "").match(/^(\d+[A-Za-z]?)\s+(.+)$/);
+  if (!m) return null;                                   // no house number — nothing to match on
+  const street = m[2].replace(STREET_SUFFIX, "").replace(/\s{2,}/g, " ").trim();
+  if (!street) return null;
+  const town = parts[1] ? parts[1].replace(/\b\d{5}\b/g, "").trim() : "";
+  const where = [
+    "ADDNUMFULL='" + sqlEsc(m[1]) + "'",
+    "UPPER(ST_FULLNAME) LIKE '%" + sqlEsc(street.toUpperCase()) + "%'",
+    town ? "UPPER(TOWN)='" + sqlEsc(town.toUpperCase()) + "'" : "",
+    zip  ? "ZIPCODE='" + sqlEsc(zip) + "'" : "",
+  ].filter(Boolean).join(" AND ");
+  try {
+    const resp = await fetch(E911_URL + "?f=json&outSR=4326&returnGeometry=true&resultRecordCount=5"
+      + "&outFields=" + encodeURIComponent("ADDNUMFULL,ST_FULLNAME,TOWN,ZIPCODE")
+      + "&where=" + encodeURIComponent(where));
+    if (!resp.ok) return null;
+    const f = ((await resp.json()).features || [])[0];
+    if (!f || !f.geometry) return null;
+    const a = f.attributes || {};
+    const short = [[a.ADDNUMFULL, a.ST_FULLNAME].filter(Boolean).join(" "), a.TOWN,
+                   ["ME", a.ZIPCODE].filter(Boolean).join(" ")].filter(Boolean).join(", ");
+    return { lat: f.geometry.y, lon: f.geometry.x, display_name: short };
+  } catch (err) { console.error("E911 fallback unavailable:", err); return null; }
+}
+
 async function geocode(address){
   address = stripUnit(address);
   if (!/maine|,\s*me\b/i.test(address)) address = address + ", Maine";
   const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&addressdetails=1&q="
             + encodeURIComponent(address);
-  const resp = await fetch(url, { headers:{ "Accept":"application/json" } });
-  if (!resp.ok) return null;
-  const data = await resp.json();
-  if (!data.length) return null;
+  let data = [];
+  try {
+    const resp = await fetch(url, { headers:{ "Accept":"application/json" } });
+    if (resp.ok) data = await resp.json();
+  } catch (err) { console.error("Geocoder unavailable:", err); }
+  if (!data.length) return geocodeE911(address);
   // Read the answer back as a short "street, town, ME zip" line rather than
   // Nominatim's full seven-clause display_name.
   const a = data[0].address || {};
